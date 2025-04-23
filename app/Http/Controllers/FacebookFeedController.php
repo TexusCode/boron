@@ -21,7 +21,7 @@ class FacebookFeedController extends Controller
         $channel->addChild('description', 'Feed for Facebook Catalog');
 
         foreach ($products as $product) {
-            if ($product->miniature) {
+            if (!$product->miniature === null) {
                 $item = $channel->addChild('item');
                 $item->addChild('g:id', $product->id, 'http://base.google.com/ns/1.0');
                 $item->addChild('title', htmlspecialchars($product->name));
