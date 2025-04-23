@@ -27,7 +27,7 @@ class FacebookFeedController extends Controller
                 $item->addChild('title', htmlspecialchars($product->title));
                 $item->addChild('description', htmlspecialchars($product->description));
                 $item->addChild('link', url('/details/' . $product->id));
-                $item->addChild('g:price', number_format($product->price, 2, '.', '') . ' USD', 'http://base.google.com/ns/1.0');
+                $item->addChild('g:price', number_format($product->price, 2, '.', '') . ' TJS', 'http://base.google.com/ns/1.0');
                 $item->addChild('g:image_link', url('/public/storage/' . $product->miniature), 'http://base.google.com/ns/1.0');
 
                 $availability = $product->quantity > 0 ? 'in stock' : 'out of stock';
