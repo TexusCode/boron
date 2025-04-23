@@ -24,16 +24,17 @@ class FacebookFeedController extends Controller
             if ($product->miniature) {
                 $item = $channel->addChild('item');
                 $item->addChild('g:id', $product->id, 'http://base.google.com/ns/1.0');
-                $item->addChild('title', htmlspecialchars($product->name));
-                $item->addChild('description', htmlspecialchars($product->description ?? "Без описание!"));
+                $item->addChild('title', htmlspecialchars($product->title));
+                $item->addChild('description', htmlspecialchars($product->description));
                 $item->addChild('link', url('/details/' . $product->id));
-                $item->addChild('g:price', number_format($product->price, 2, '.', '') . ' TJS', 'http://base.google.com/ns/1.0');
-                $item->addChild('g:image_link', asset('storage/' . $product->miniature), 'http://base.google.com/ns/1.0');
+                $item->addChild('g:price', number_format($product->price, 2, '.', '') . ' USD', 'http://base.google.com/ns/1.0');
+                $item->addChild('g:image_link', url('/storage/' . $product->miniature), 'http://base.google.com/ns/1.0');
 
-
-                // Добавляем наличие
-                $availability = $product->stock > 0 ? 'in stock' : 'out of stock';
+                $availability = $product->quantity > 0 ? 'in stock' : 'out of stock';
                 $item->addChild('g:availability', $availability, 'http://base.google.com/ns/1.0');
+
+                $item->addChild('g:condition', 'new', 'http://base.google.com/ns/1.0');
+                $item->addChild('g:brand', 'Boron', 'http://base.google.com/ns/1.0');
             }
         }
 
