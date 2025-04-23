@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\CouponesController;
+use App\Http\Controllers\FacebookFeedController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\Web\MiniatureController;
@@ -79,12 +80,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     //imageoptomozer
     Route::post('/imageoptomozer', [MiniatureController::class, 'imageoptomozer'])->name('imageoptomozer');
     //Sliders
-    Route::get('/sliders', [SliderController::class,'sliders'])->name('sliders');
-    Route::post('/slider-add', [SliderController::class,'slideradd'])->name('slider-add');
-    Route::post('/slider-del/{id}', [SliderController::class,'sliderdel'])->name('slider-del');
+    Route::get('/sliders', [SliderController::class, 'sliders'])->name('sliders');
+    Route::post('/slider-add', [SliderController::class, 'slideradd'])->name('slider-add');
+    Route::post('/slider-del/{id}', [SliderController::class, 'sliderdel'])->name('slider-del');
     //cities
     Route::get('/cities', [CityController::class, 'cities'])->name('cities');
     Route::post('/city-add', [CityController::class, 'cityadd'])->name('city-add');
     Route::post('/city-del/{id}', [CityController::class, 'cityrdel'])->name('city-del');
-
+    //Facebook Feeds
+    Route::post('/facebook-feeds', [FacebookFeedController::class, 'index'])->name('facebook-feeds');
 });
