@@ -1,0 +1,28 @@
+[22-Jan-2025 18:45:04 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/app.php on line 18
+[22-Jan-2025 18:45:06 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/app.php on line 18
+[25-Jan-2025 01:32:11 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/app.php on line 18
+[10-Feb-2025 00:10:38 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/database.php on line 18
+[19-Feb-2025 07:54:27 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/cache.php on line 18
+[25-Feb-2025 08:21:01 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/cache.php on line 18
+[19-Mar-2025 20:29:38 America/Boise] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home2/coervsmy/public_html/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/config/app.php on line 18

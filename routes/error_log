@@ -1,0 +1,4 @@
+[19-Mar-2025 20:29:39 America/Boise] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in /home2/coervsmy/public_html/routes/web.php:9
+Stack trace:
+#0 {main}
+  thrown in /home2/coervsmy/public_html/routes/web.php on line 9

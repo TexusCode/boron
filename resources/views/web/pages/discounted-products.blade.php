@@ -1,0 +1,17 @@
+@extends('web.layouts.app')
+@section('content')
+<section class="bg-white">
+    <div class="max-w-screen-xl px-2 mx-auto mt-4 mb-12">
+        <div class="max-w-screen-xl text-gray-500 sm:text-lg dark:text-gray-400">
+            <h2 class="mb-4 text-4xl font-bold tracking-tight text-gray-900">Товары со сккидкой</h2>
+            <div class="grid grid-cols-2 gap-1 mb-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                @foreach ($products as $product)
+                @include('web.partials.product-card')
+                @endforeach
+            </div>
+            {{ $products->links('pagination::simple-tailwind') }}
+        </div>
+    </div>
+</section>
+
+@endsection
