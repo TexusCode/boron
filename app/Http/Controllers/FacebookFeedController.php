@@ -35,6 +35,9 @@ class FacebookFeedController extends Controller
 
                 $item->addChild('g:condition', 'new', 'http://base.google.com/ns/1.0');
                 $item->addChild('g:brand', 'Boron', 'http://base.google.com/ns/1.0');
+
+
+
             }
         }
 
