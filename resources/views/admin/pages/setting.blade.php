@@ -58,4 +58,16 @@
         </form>
 
     </div>
+    <div class="w-full h-full bg-gray-50">
+        <h2 class="mb-4 text-2xl font-bold text-gray-800">Удалит все товары</h2>
+        <form action="{{ route('truncate') }}" method="POST" enctype="multipart/form-data"
+            class="grid gap-4 p-6 mx-auto bg-white rounded-lg">
+            @csrf
+            <button type="submit"
+                class="w-full px-4 py-2 font-semibold text-white rounded-md shadow-sm bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-indigo-200 focus:outline-none focus:ring-opacity-50">
+                Удалит все товары
+            </button>
+        </form>
+
+    </div>
 @endsection

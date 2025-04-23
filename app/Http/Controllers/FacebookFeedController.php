@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use File;
 use Illuminate\Http\Request;
 
 class FacebookFeedController extends Controller
@@ -40,6 +41,18 @@ class FacebookFeedController extends Controller
 
         file_put_contents(public_path('facebook_feed.xml'), $xml->asXML());
         return back()->with('success', 'Каталог успешно создано!');
+    }
+
+    public function truncate()
+    {
+        $folderPath1 = storage_path('app/public/images');
+        $folderPath2 = storage_path('app/public/thumbs\images');
+
+        // Удалить все файлы
+        File::cleanDirectory($folderPath1);
+        File::cleanDirectory($folderPath2);
+
+        Product::truncate();
     }
 
 }

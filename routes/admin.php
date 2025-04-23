@@ -89,4 +89,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/city-del/{id}', [CityController::class, 'cityrdel'])->name('city-del');
     //Facebook Feeds
     Route::post('/facebook-feeds', [FacebookFeedController::class, 'index'])->name('facebook-feeds');
+    //Truncate
+    Route::post('/truncate', [FacebookFeedController::class, 'truncate'])->name('truncate');
 });
