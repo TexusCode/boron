@@ -30,14 +30,11 @@ class FacebookFeedController extends Controller
                 $item->addChild('g:price', number_format($product->price, 2, '.', '') . ' TJS', 'http://base.google.com/ns/1.0');
                 $item->addChild('g:image_link', url('/public/storage/' . $product->miniature), 'http://base.google.com/ns/1.0');
 
-                $availability = $product->quantity > 0 ? 'in stock' : 'out of stock';
+                $availability = $product->stock > 0 ? 'in stock' : 'out of stock';
                 $item->addChild('g:availability', $availability, 'http://base.google.com/ns/1.0');
 
                 $item->addChild('g:condition', 'new', 'http://base.google.com/ns/1.0');
                 $item->addChild('g:brand', 'Boron', 'http://base.google.com/ns/1.0');
-
-
-
             }
         }
 
