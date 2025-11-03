@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Seller;
 
-use App\Http\Controllers\Controller;
-use App\Models\Product as ModelsProduct;
 use App\Models\Seller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use App\Jobs\MoyskladBigUpdateJob;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Product as ModelsProduct;
 
 class MoyskladController extends Controller
 {
@@ -27,96 +28,107 @@ class MoyskladController extends Controller
             return $next($request);
         });
     }
-    public function moyskladbigupdate()
-    {
-        ini_set('max_execution_time', 20000);
-        $user_id = Auth::id();
-        $seller = Seller::where('user_id', $user_id)->first();
+    // public function moyskladbigupdate()
+    // {
+    //     $user_id = Auth::id();
+    //     $seller = Seller::where('user_id', $user_id)->first();
 
-        $allProducts = [];
-        $limit = 1000;
-        $offset = 0;
-        $baseUrl = 'https://api.moysklad.ru/api/remap/1.2/';
-        do {
-            $response = Http::withBasicAuth($this->username, $this->password)
-            ->withHeaders([
-                'Accept-Encoding' => 'gzip',
-                'Content-Type' => 'application/json',
-            ])
-            ->get($baseUrl . 'entity/assortment', [
-                'limit' => $limit,
-                'offset' => $offset,
-            ]);
+    //     $allProducts = [];
+    //     $limit = 1000;
+    //     $offset = 0;
+    //     $baseUrl = 'https://api.moysklad.ru/api/remap/1.2/';
+    //     do {
+    //         $response = Http::withBasicAuth($this->username, $this->password)
+    //         ->withHeaders([
+    //             'Accept-Encoding' => 'gzip',
+    //             'Content-Type' => 'application/json',
+    //         ])
+    //         ->get($baseUrl . 'entity/assortment', [
+    //             'limit' => $limit,
+    //             'offset' => $offset,
+    //         ]);
 
-            if ($response->successful()) {
-                $products = $response->json();
+    //         if ($response->successful()) {
+    //             $products = $response->json();
 
-                $allProducts = array_merge($allProducts, $products['rows']);
+    //             $allProducts = array_merge($allProducts, $products['rows']);
 
-                $offset += $limit;
-            } else {
-                // dd('Ошибка: ' . $response->status(), $response->body());
-            }
-        } while (count($products['rows']) == $limit);
-        $counter = count($allProducts);
-        $count = 0;
-        foreach ($allProducts as $product) {
-            $price = !empty($product['salePrices']) ? $product['salePrices'][0]['value'] / 100 ?? null : null;
-            $pr = ModelsProduct::where(['moysklad_id' => $product['id']])->first();
-            if(!$pr)
-            {
-                $savep = ModelsProduct::firstOrNew(['moysklad_id' => $product['id']]);
-                $savep->seller_id = $seller->id;
-                $savep->name = $product['name'] ?? null;
-                $savep->description = $product['description'] ?? null;
-                $savep->code = $product['code'] ?? rand(10000, 99999);
-                $savep->stock = $product['stock'] ?? null;
-                $savep->price = $price;
+    //             $offset += $limit;
+    //         } else {
+    //             // dd('Ошибка: ' . $response->status(), $response->body());
+    //         }
+    //     } while (count($products['rows']) == $limit);
+    //     $counter = count($allProducts);
+    //     $count = 0;
+    //     foreach ($allProducts as $product) {
+    //         $price = !empty($product['salePrices']) ? $product['salePrices'][0]['value'] / 100 ?? null : null;
+    //         $pr = ModelsProduct::where(['moysklad_id' => $product['id']])->first();
+    //         if(!$pr)
+    //         {
+    //             $savep = ModelsProduct::firstOrNew(['moysklad_id' => $product['id']]);
+    //             $savep->seller_id = $seller->id;
+    //             $savep->name = $product['name'] ?? null;
+    //             $savep->description = $product['description'] ?? null;
+    //             $savep->code = $product['code'] ?? rand(10000, 99999);
+    //             $savep->stock = $product['stock'] ?? null;
+    //             $savep->price = $price;
 
-                $filename = null;
-                $hasImage = false;
+    //             $filename = null;
+    //             $hasImage = false;
 
-                if (isset($product['images']['meta']['href'])) {
-                    $client = new Client([
-                        'timeout' => 20000,
-                        'connect_timeout' => 20000,
-                    ]);
-                    $imageResponse = $client->get(
-                        $product['images']['meta']['href'],
-                        [
-                            'auth' => [$this->username, $this->password],
-                            'headers' => ['Accept-Encoding' => 'gzip'],
-                            'limit' => 1,
-                        ]
-                    );
-                    $images = json_decode($imageResponse->getBody());
-                    foreach ($images->rows as $image) {
-                        $activeimage = $client->get($image->meta->downloadHref, [
-                            'auth' => [$this->username, $this->password],
-                            'headers' => ['Accept-Encoding' => 'gzip'],
-                        ]);
+    //             if (isset($product['images']['meta']['href'])) {
+    //                 $client = new Client([
+    //                     'timeout' => 20000,
+    //                     'connect_timeout' => 20000,
+    //                 ]);
+    //                 $imageResponse = $client->get(
+    //                     $product['images']['meta']['href'],
+    //                     [
+    //                         'auth' => [$this->username, $this->password],
+    //                         'headers' => ['Accept-Encoding' => 'gzip'],
+    //                         'limit' => 1,
+    //                     ]
+    //                 );
+    //                 $images = json_decode($imageResponse->getBody());
+    //                 foreach ($images->rows as $image) {
+    //                     $activeimage = $client->get($image->meta->downloadHref, [
+    //                         'auth' => [$this->username, $this->password],
+    //                         'headers' => ['Accept-Encoding' => 'gzip'],
+    //                     ]);
 
-                        $imageData = $activeimage->getBody()->getContents();
+    //                     $imageData = $activeimage->getBody()->getContents();
 
-                        $filename = 'images/' . uniqid() . '_' . $image->filename;
+    //                     $filename = 'images/' . uniqid() . '_' . $image->filename;
 
-                        Storage::disk('public')->put($filename, $imageData);
-                        $hasImage = true;
-                    }
-                }
+    //                     Storage::disk('public')->put($filename, $imageData);
+    //                     $hasImage = true;
+    //                 }
+    //             }
 
-                $savep->miniature = $hasImage ? $filename : null;
-                $savep->status = $hasImage;
-                $savep->save();
-            }
+    //             $savep->miniature = $hasImage ? $filename : null;
+    //             $savep->status = $hasImage;
+    //             $savep->save();
+    //         }
 
-            $count++;
-        }
+    //         $count++;
+    //     }
 
-        return back()->with('success', 'Успешно');
-    }
+    //     return back()->with('success', 'Успешно');
+    // }
 
+public function moyskladbigupdate()
+{
+    $user = Auth::user();
+    $seller = $user->seller;
 
+    MoyskladBigUpdateJob::dispatch(
+        $seller->moysklad_login,
+        $seller->moysklad_password,
+        $seller->id
+    );
+
+    return back()->with('success', 'Загрузка товаров запущена в фоне.');
+}
 
     public function settings()
     {
