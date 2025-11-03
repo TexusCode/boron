@@ -2,12 +2,12 @@
                 <div class="relative p-0 overflow-hidden rounded-lg">
                     <div class="aspect-w-1 aspect-h-1">
                         <a href="{{ route('details',$product->id) }}">
+                            
+                            @if(Storage::exists('storage/thumbs/'.$product->miniature))
                             <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ asset('storage/thumbs/'.$product->miniature) }}" alt="" />
-                            {{-- @if(Storage::exists('storage/thumbs/'.$product->miniature))
-
                             @else
                             <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ asset('storage/'.$product->miniature) }}" alt="" />
-                            @endif --}}
+                            @endif
                         </a>
                     </div>
                     @livewire('web.add-to-favorite', ['id'=>$product->id])
