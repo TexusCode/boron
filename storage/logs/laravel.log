@@ -2529,3 +2529,35 @@
 #72 /Users/mahmudishodmehr/Desktop/texhub/boron/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(16): require_once('/Users/mahmudis...')
 #73 {main}
 "} 
+[2025-11-03 11:29:31] local.ERROR: Command "session:clear" is not defined.
+
+Did you mean one of these?
+    auth:clear-resets
+    cache:clear
+    config:clear
+    event:clear
+    optimize:clear
+    queue:clear
+    route:clear
+    schedule:clear-cache
+    session:table
+    view:clear {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"session:clear\" is not defined.
+
+Did you mean one of these?
+    auth:clear-resets
+    cache:clear
+    config:clear
+    event:clear
+    optimize:clear
+    queue:clear
+    route:clear
+    schedule:clear-cache
+    session:table
+    view:clear at /Users/mahmudishodmehr/Desktop/texhub/boron/vendor/symfony/console/Application.php:737)
+[stacktrace]
+#0 /Users/mahmudishodmehr/Desktop/texhub/boron/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find('session:clear')
+#1 /Users/mahmudishodmehr/Desktop/texhub/boron/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#2 /Users/mahmudishodmehr/Desktop/texhub/boron/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 /Users/mahmudishodmehr/Desktop/texhub/boron/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 {main}
+"} 
