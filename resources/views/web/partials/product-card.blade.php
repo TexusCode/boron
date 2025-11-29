@@ -1,20 +1,29 @@
+            @php
+                $finalPrice = $product->display_price;
+                $hasDiscount = $product->total_discount_percent > 0;
+                $formattedFinalPrice = rtrim(rtrim(number_format($finalPrice, 2, '.', ''), '0'), '.');
+                $formattedOriginalPrice = rtrim(rtrim(number_format($product->price, 2, '.', ''), '0'), '.');
+            @endphp
             <div class="p-1 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
                 <div class="relative p-0 overflow-hidden rounded-lg">
                     <div class="aspect-w-1 aspect-h-1">
+        @php
+            $thumbPath = $product->miniature ? 'thumbs/' . ltrim($product->miniature, '/') : null;
+            $imagePath = $product->miniature;
+            if ($thumbPath && Storage::disk('public')->exists($thumbPath)) {
+                $imagePath = $thumbPath;
+            }
+            $imageUrl = $imagePath ? asset('storage/' . $imagePath) : 'https://via.placeholder.com/300x300?text=No+Image';
+        @endphp
                         <a href="{{ route('details',$product->id) }}">
-                            
-                            @if(Storage::exists('storage/thumbs/'.$product->miniature))
-                            <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ asset('storage/thumbs/'.$product->miniature) }}" alt="" />
-                            @else
-                            <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ asset('storage/'.$product->miniature) }}" alt="" />
-                            @endif
+                            <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ $imageUrl }}" alt="{{ $product->name }}" />
                         </a>
                     </div>
                     @livewire('web.add-to-favorite', ['id'=>$product->id])
-                    @if($product->discount)
+                    @if($hasDiscount)
                     <span class="rounded-md text-xs font-bold px-1.5 absolute top-1 left-1 text-white bg-red-500">
 
-                        -{{ round(($product->price - $product->discount)*100/$product->price) }}%
+                        -{{ $product->total_discount_percent }}%
                     </span>
                     @endif
                     <span class="absolute px-2 text-xs font-semibold text-white uppercase bg-green-500 rounded-md bottom-1 left-1">
@@ -24,12 +33,9 @@
                 <div class="mt-1">
                     <a href="{{ route('details',$product->id) }}" class="text-xs font-semibold leading-tight text-gray-900 whitespace-normal hover:underline line-clamp-1">{{ $product->name }}</a>
                     <p class="my-2 text-lg font-bold leading-none text-primary-700">
-                        @if($product->discount == null)
-                        <span>{{ $product->price }}c</span>
-                        @else
-                        <span>{{ $product->discount }}c</span>
-
-                        <span class="text-base font-normal text-red-700 line-through">{{ $product->price }}c</span>
+                        <span>{{ $formattedFinalPrice }}c</span>
+                        @if($hasDiscount)
+                        <span class="text-base font-normal text-red-700 line-through">{{ $formattedOriginalPrice }}c</span>
                         @endif
                     </p>
                     <ul class="flex items-center gap-4">

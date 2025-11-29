@@ -25,9 +25,15 @@ class PagesController extends Controller
 {
     public function filters(Request $request)
     {
-        $products = Product::whereHas('seller', function ($query) {
-            $query->where('status', true);
-        })->orderBy('created_at', 'desc')->where('status', true)->paginate(36);
+        $products = Product::select('products.*')
+            ->distinct()
+            ->whereHas('seller', function ($query) {
+                $query->where('status', true);
+            })
+            ->where('status', true)
+            ->orderBy('created_at', 'desc')
+            ->paginate(36)
+            ->withQueryString();
         if ($request->ajax()) {
             $view = view('web.loads', compact('products'))->render();
             return Response::json(['view' => $view, 'nextPageUrl' => $products->nextPageUrl()]);
@@ -89,7 +95,7 @@ class PagesController extends Controller
             $discount = 0; // Initialize discount with a default value
 
             if ($product) {
-                $pprice = $product->discount ?? $product->price; // Use discount if available, else regular price
+                $pprice = $product->display_price;
 
                 // Check for coupon code and calculate discount
                 if (!empty($order->coupone_code)) {
@@ -106,6 +112,7 @@ class PagesController extends Controller
                     'price' => $pprice,
                     'discount' => $discount,
                     'seller_id' => $product->seller->id,
+                    'status' => 'Ожидание',
                 ]);
             }
         }
@@ -160,6 +167,7 @@ class PagesController extends Controller
                     $message = "Ассалому алейкум, {$user->name}!\nВаш заказ №{$order->id} успешно получен!\nСтатус: Ожидание.\nСпасибо, что выбрали нас!";
                     $smsController = new SmsController();
                     $smsController->sendSms($phone, $message);
+                    $smsController->sendSms("933604040", "Ассалому алейкум, {$user->name}!\nУ вас заказ №{$order->id} успешно получен!\nСтатус: Ожидание.");
                 }
 
                 // Очищаем сессионные данные по отдельности
@@ -186,11 +194,34 @@ class PagesController extends Controller
 
     public function discountedproducts()
     {
-        $products = Product::whereHas('seller', function ($query) {
+        $autoCoupons = Coupone::where('status', true)
+            ->where('auto_apply', true)
+            ->get();
+        $hasGlobalSale = $autoCoupons->contains(function ($coupon) {
+            return $coupon->scope === 'all';
+        });
+        $categoryIds = $autoCoupons->where('scope', 'category')
+            ->pluck('category_id')
+            ->filter()
+            ->unique()
+            ->toArray();
+
+        $productsQuery = Product::whereHas('seller', function ($query) {
             $query->where('status', true);
         })
-            ->where('status', true)
-            ->where('discount', '>', 0) // Убедитесь, что поле discount не пустое
+            ->where('status', true);
+
+        if (!$hasGlobalSale) {
+            $productsQuery->where(function ($query) use ($categoryIds) {
+                $query->where('discount', '>', 0);
+
+                if (!empty($categoryIds)) {
+                    $query->orWhereIn('category_id', $categoryIds);
+                }
+            });
+        }
+
+        $products = $productsQuery
             ->orderBy('created_at', 'desc')
             ->paginate(36);
 
@@ -215,6 +246,8 @@ class PagesController extends Controller
     public function search(Request $request)
     {
         $query = Product::query()
+            ->select('products.*')
+            ->distinct()
             ->where('status', true) // Фильтр по статусу продукта
             ->whereHas('seller', function ($query) {
                 $query->where('status', true); // Фильтр по статусу продавца
@@ -222,10 +255,16 @@ class PagesController extends Controller
 
         // Поиск по имени или коду
         if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function ($subQuery) use ($searchTerm) {
-                $subQuery->where('name', 'like', "%{$searchTerm}%")
-                ->orWhere('code', 'like', "%{$searchTerm}%");
+            $searchTerm = trim($request->search);
+            $searchTerms = preg_split('/\s+/', $searchTerm, -1, PREG_SPLIT_NO_EMPTY);
+
+            $query->where(function ($subQuery) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $subQuery->where(function ($wordQuery) use ($term) {
+                        $wordQuery->where('name', 'like', "%{$term}%")
+                            ->orWhere('code', 'like', "%{$term}%");
+                    });
+                }
             });
         }
 
@@ -245,10 +284,11 @@ class PagesController extends Controller
 
         // Сортировка
         $sortDirection = $request->sort === 'asc' ? 'asc' : 'desc';
-        $query->orderBy('created_at', $sortDirection);
+        $query->orderByRaw('stock > 0 DESC')
+            ->orderBy('created_at', $sortDirection);
 
         // Пагинация
-        $products = $query->paginate(36);
+        $products = $query->paginate(36)->withQueryString();
         if ($request->ajax()) {
             $view = view('web.loads', compact('products'))->render();
             return Response::json(['view' => $view, 'nextPageUrl' => $products->nextPageUrl()]);
@@ -291,7 +331,7 @@ class PagesController extends Controller
     {
         $ordercheckout = OderCheckout::find($id);
         $cities = City::all();
-        return view('web.pages.checkout', compact('ordercheckout','cities'));
+        return view('web.pages.checkout', compact('ordercheckout', 'cities'));
     }
 
     public function profile()

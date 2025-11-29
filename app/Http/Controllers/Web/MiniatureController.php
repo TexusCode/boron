@@ -31,11 +31,14 @@ class MiniatureController extends Controller
                 $background = Image::canvas(200, 200, '#FFFFFF');
                 $background->insert($image, 'center');
 
-                $zumbsPath = 'thumbs/images/' . basename($miniaturePath);
+                $thumbPath = 'thumbs/' . ltrim($miniaturePath, '/');
 
-                Storage::disk('public')->makeDirectory(dirname($zumbsPath));
+                $directory = trim(dirname($thumbPath), '.');
+                if ($directory) {
+                    Storage::disk('public')->makeDirectory($directory);
+                }
 
-                $background->save(Storage::disk('public')->path($zumbsPath));
+                $background->save(Storage::disk('public')->path($thumbPath));
             }
         }
 

@@ -1,10 +1,22 @@
+@php
+    $finalPrice = $product->display_price;
+    $hasDiscount = $product->total_discount_percent > 0;
+    $formattedFinalPrice = rtrim(rtrim(number_format($finalPrice, 2, '.', ''), '0'), '.');
+    $formattedOriginalPrice = rtrim(rtrim(number_format($product->price, 2, '.', ''), '0'), '.');
+@endphp
 <div class="p-1 bg-white border border-gray-200 shadow-sm rounded-xl dark:border-gray-700 dark:bg-gray-800">
     <div class="relative p-0 overflow-hidden rounded-lg">
+        @php
+            $thumbPath = $product->miniature ? 'thumbs/' . ltrim($product->miniature, '/') : null;
+            $imagePath = $product->miniature;
+            if ($thumbPath && Storage::disk('public')->exists($thumbPath)) {
+                $imagePath = $thumbPath;
+            }
+            $imageUrl = $imagePath ? asset('storage/' . $imagePath) : 'https://via.placeholder.com/300x300?text=No+Image';
+        @endphp
         <div class="aspect-w-1 aspect-h-1">
             <a href="{{ route('details',$product->id) }}">
-                <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ asset('storage/thumbs/'.$product->miniature) }}" alt="" />
-
-
+                <img class="object-cover object-center w-full h-full duration-150 hover:scale-110" src="{{ $imageUrl }}" alt="{{ $product->name }}" />
             </a>
         </div>
         <span class="absolute top-1 left-2">
@@ -31,12 +43,10 @@
 
 
         <p class="my-2 text-lg font-bold leading-none text-primary-700">
-            @if($product->discount == null)
-            <span>{{ $product->price }}c</span>
-            @else
-            <span>{{ $product->discount }}c</span>
-
-            <span class="text-base font-normal text-red-700 line-through">{{ $product->price }}c</span>
+            <span>{{ $formattedFinalPrice }}c</span>
+            @if($hasDiscount)
+            <span class="text-base font-normal text-red-700 line-through">{{ $formattedOriginalPrice }}c</span>
+            <span class="ml-1 text-xs font-semibold text-red-500">-{{ $product->total_discount_percent }}%</span>
             @endif
         </p>
         <p class="text-sm leading-tight text-gray-900 whitespace-normal hover:underline dark:text-white line-clamp-1">Статус:

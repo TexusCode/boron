@@ -68,54 +68,62 @@ public function handle(): void
                 ? $product['salePrices'][0]['value'] / 100 ?? null
                 : null;
 
-            $pr = Product::where('moysklad_id', $product['id'])->first();
+            $savep = Product::firstOrNew([
+                'moysklad_id' => $product['id'],
+                'seller_id' => $seller->id,
+            ]);
 
-            if (!$pr) {
-                $savep = Product::firstOrNew(['moysklad_id' => $product['id']]);
-                $savep->seller_id = $seller->id;
-                $savep->name = $product['name'] ?? null;
-                $savep->description = $product['description'] ?? null;
-                $savep->code = $product['code'] ?? rand(10000, 99999);
-                $savep->stock = $product['stock'] ?? null;
-                $savep->price = $price;
+            $savep->name = $product['name'] ?? $savep->name;
+            $savep->description = $product['description'] ?? $savep->description;
+            $savep->code = $product['code'] ?? $savep->code ?? rand(10000, 99999);
+            $savep->stock = $product['stock'] ?? $savep->stock;
+            $savep->price = $price ?? $savep->price;
 
-                $filename = null;
-                $hasImage = false;
+            $filename = null;
+            $hasImage = false;
 
-                if (isset($product['images']['meta']['href'])) {
-                    $client = new Client([
-                        'timeout' => 20000,
-                        'connect_timeout' => 20000,
+            if (isset($product['images']['meta']['href'])) {
+                $client = new Client([
+                    'timeout' => 20000,
+                    'connect_timeout' => 20000,
+                ]);
+
+                $imageResponse = $client->get(
+                    $product['images']['meta']['href'],
+                    [
+                        'auth' => [$this->username, $this->password],
+                        'headers' => ['Accept-Encoding' => 'gzip'],
+                        'limit' => 1,
+                    ]
+                );
+
+                $images = json_decode($imageResponse->getBody());
+                foreach ($images->rows as $image) {
+                    $activeimage = $client->get($image->meta->downloadHref, [
+                        'auth' => [$this->username, $this->password],
+                        'headers' => ['Accept-Encoding' => 'gzip'],
                     ]);
 
-                    $imageResponse = $client->get(
-                        $product['images']['meta']['href'],
-                        [
-                            'auth' => [$this->username, $this->password],
-                            'headers' => ['Accept-Encoding' => 'gzip'],
-                            'limit' => 1,
-                        ]
-                    );
+                    $imageData = $activeimage->getBody()->getContents();
+                    $filename = 'images/' . uniqid() . '_' . $image->filename;
 
-                    $images = json_decode($imageResponse->getBody());
-                    foreach ($images->rows as $image) {
-                        $activeimage = $client->get($image->meta->downloadHref, [
-                            'auth' => [$this->username, $this->password],
-                            'headers' => ['Accept-Encoding' => 'gzip'],
-                        ]);
-
-                        $imageData = $activeimage->getBody()->getContents();
-                        $filename = 'images/' . uniqid() . '_' . $image->filename;
-
-                        Storage::disk('public')->put($filename, $imageData);
-                        $hasImage = true;
-                    }
+                    Storage::disk('public')->put($filename, $imageData);
+                    $hasImage = true;
+                    break;
                 }
-
-                $savep->miniature = $hasImage ? $filename : null;
-                $savep->status = $hasImage;
-                $savep->save();
             }
+
+            if ($hasImage) {
+                $savep->miniature = $filename;
+            }
+
+            if (!$savep->miniature) {
+                $savep->status = $hasImage ? true : false;
+            } else {
+                $savep->status = true;
+            }
+
+            $savep->save();
         }
     }
 }

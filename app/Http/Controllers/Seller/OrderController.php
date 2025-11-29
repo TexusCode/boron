@@ -5,68 +5,91 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\SubOrder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades.Auth;
 
 class OrderController extends Controller
 {
+    protected function sellerSubOrdersQuery(?string $status = null)
+    {
+        $seller = Auth::user()->seller;
+        abort_unless($seller, 403, 'Seller profile not found.');
+
+        $query = SubOrder::with(['product', 'order.user'])
+            ->where('seller_id', $seller->id)
+            ->whereHas('order', function ($query) {
+                $query->where('status', '!=', 'Неподтверждено');
+            })
+            ->orderByDesc('created_at');
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query;
+    }
+
     public function orders()
     {
-        $user = Auth::user();
-        $orders = SubOrder::where('seller_id', $user->seller->id)
-            ->whereHas('order', function ($query) {
-                $query->where('status', '!=', 'Неподтверждено');
-            })->orderby('created_at','desc')->paginate(36);
-
+        $orders = $this->sellerSubOrdersQuery()
+            ->paginate(36)
+            ->withQueryString();
 
         return view('seller.pages.orders', compact('orders'));
     }
+
     public function orderscancelled()
     {
-        $user = Auth::user();
-        $orders = SubOrder::where('status', 'Отменено')->where('seller_id', $user->seller->id)
-            ->whereHas('order', function ($query) {
-                $query->where('status', '!=', 'Неподтверждено');
-            })
-            ->paginate(36);
+        $orders = $this->sellerSubOrdersQuery('Отменено')
+            ->paginate(36)
+            ->withQueryString();
 
         return view('seller.pages.orders', compact('orders'));
     }
+
     public function ordersconfirmed()
     {
-        $user = Auth::user();
-        $orders = SubOrder::where('status', 'Подтверждено')->where('seller_id', $user->seller->id)
-            ->whereHas('order', function ($query) {
-                $query->where('status', '!=', 'Неподтверждено');
-            })
-            ->paginate(36);
+        $orders = $this->sellerSubOrdersQuery('Подтверждено')
+            ->paginate(36)
+            ->withQueryString();
+
         return view('seller.pages.orders', compact('orders'));
     }
+
     public function orderspeending()
     {
-        $user = Auth::user();
-        $orders = SubOrder::where('status', 'Ожидание')->where('seller_id', $user->seller->id)
-            ->whereHas('order', function ($query) {
-                $query->where('status', '!=', 'Неподтверждено');
-            })
-            ->paginate(36);
+        $orders = $this->sellerSubOrdersQuery('Ожидание')
+            ->paginate(36)
+            ->withQueryString();
+
         return view('seller.pages.orders', compact('orders'));
     }
+
     public function ordersdelivered()
     {
-        $user = Auth::user();
-        $orders = SubOrder::where('status', 'Доставлен')->where('seller_id', $user->seller->id)
-            ->whereHas('order', function ($query) {
-                $query->where('status', '!=', 'Неподтверждено');
-            })
-            ->paginate(36);
+        $orders = $this->sellerSubOrdersQuery('Доставлен')
+            ->paginate(36)
+            ->withQueryString();
 
         return view('seller.pages.orders', compact('orders'));
     }
+
     public function orderdetails($id)
     {
-        $order = Order::find($id);
+        $seller = Auth::user()->seller;
+        abort_unless($seller, 403, 'Seller profile not found.');
 
-        return view('admin.pages.order-details', compact('order'));
+        $order = Order::with([
+            'user',
+            'suborders' => function ($query) use ($seller) {
+                $query->where('seller_id', $seller->id)
+                    ->with('product');
+            },
+        ])
+            ->whereHas('suborders', function ($query) use ($seller) {
+                $query->where('seller_id', $seller->id);
+            })
+            ->findOrFail($id);
+
+        return view('seller.pages.order-details', compact('order'));
     }
 }

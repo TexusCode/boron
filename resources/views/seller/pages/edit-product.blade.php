@@ -15,10 +15,8 @@
 
             <!-- Description -->
             <div class="col-span-full">
-                <label for="description" class="block text-sm font-medium text-gray-700">Описание</label>
-                <textarea value="{{ $product->description }}" id="description" name="description" rows="4" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>{{ $product->description }}</textarea>
-
-
+                <label for="description" class="block text-sm font-medium text-gray-700">Описание <span class="text-xs text-red-500">(не обязательно)</span></label>
+                <textarea id="description" name="description" rows="20" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 min-h-[320px]">{{ old('description', $product->description) }}</textarea>
             </div>
 
             <!-- Code -->
@@ -108,4 +106,22 @@
     </form>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const descriptionField = document.querySelector('#description');
+        if (!descriptionField) {
+            return;
+        }
+
+        ClassicEditor
+            .create(descriptionField, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'underline', '|', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'undo', 'redo']
+            })
+            .catch(error => console.error('CKEditor init error:', error));
+    });
+</script>
 @endsection

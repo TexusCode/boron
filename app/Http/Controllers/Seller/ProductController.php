@@ -53,7 +53,7 @@ class ProductController extends Controller
         $user = Auth::user();
         $product = new Product();
         $product->name = $request->name;
-        $product->description = $request->description;
+        $product->description = $request->filled('description') ? $request->description : null;
         $product->code = $request->code;
         $product->stock = $request->stock;
         $product->price = $request->price;
@@ -100,7 +100,7 @@ class ProductController extends Controller
 
         // Update product properties
         $product->name = $request->name;
-        $product->description = $request->description;
+        $product->description = $request->filled('description') ? $request->description : null;
         $product->code = $request->code;
         $product->stock = $request->stock;
         $product->price = $request->price;

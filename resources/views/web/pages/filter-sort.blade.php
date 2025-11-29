@@ -5,7 +5,7 @@
         <!-- Heading & Filters -->
         <div class="items-end justify-between mb-4 space-y-4 sm:flex sm:space-y-0">
             <div>
-                <h2 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Найдено товары ({{ $products->count() }})</h2>
+                <h2 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Найдено товары ({{ $products->total() }})</h2>
             </div>
             {{-- <div class="flex items-center space-x-1">
                 <button data-modal-toggle="filterModal" data-modal-target="filterModal" type="button" class="flex items-center justify-center w-full px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">
@@ -54,12 +54,9 @@
         <div id="posts-container">
             @include('web.loads')
         </div>
-        @if($products->hasMorePages())
-
-        <div class="flex justify-center w-full">
+        <div id="loading-indicator" class="flex justify-center w-full hidden">
             Загрузка...
         </div>
-        @endif
 
 
 
@@ -685,28 +682,36 @@
 <script>
     $(document).ready(function() {
         let nextPageUrl = '{{ $products->nextPageUrl() }}';
+        let isLoading = false;
+        const $loader = $('#loading-indicator');
 
         $(window).scroll(function() {
             if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-                if (nextPageUrl) {
-                    loadMorePosts();
-                }
+                loadMorePosts();
             }
         });
 
         function loadMorePosts() {
+            if (!nextPageUrl || isLoading) {
+                return;
+            }
+
+            isLoading = true;
+            $loader.removeClass('hidden');
+
             $.ajax({
                 url: nextPageUrl
                 , type: 'get'
-                , beforeSend: function() {
-                    nextPageUrl = '';
-                }
                 , success: function(data) {
                     nextPageUrl = data.nextPageUrl;
                     $('#posts-container').append(data.view);
                 }
                 , error: function(xhr, status, error) {
                     console.error("Error loading more posts:", error);
+                }
+                , complete: function() {
+                    isLoading = false;
+                    $loader.addClass('hidden');
                 }
             });
         }

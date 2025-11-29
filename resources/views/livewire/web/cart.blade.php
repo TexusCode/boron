@@ -9,10 +9,17 @@
                     @foreach ($user as $cart)
                     <div class="p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div class="flex gap-2">
+                            @php
+                                $miniature = $cart->product->miniature;
+                                $thumbPath = $miniature ? 'thumbs/' . ltrim($miniature, '/') : null;
+                                $imagePath = $miniature;
+                                if ($thumbPath && Storage::disk('public')->exists($thumbPath)) {
+                                    $imagePath = $thumbPath;
+                                }
+                                $imageUrl = $imagePath ? asset('storage/' . $imagePath) : 'https://via.placeholder.com/160x160?text=No+Image';
+                            @endphp
                             <a href="{{ route('details', $cart->product->id) }}" class="shrink-0">
-                                <img class="object-cover object-center w-20 h-20 border border-black rounded-lg" src="{{ asset('storage/thumbs/'.$cart->product->miniature) }}" alt="{{ $cart->product->name }}" />
-
-
+                                <img class="object-cover object-center w-20 h-20 border border-black rounded-lg" src="{{ $imageUrl }}" alt="{{ $cart->product->name }}" />
                             </a>
                             <div class="flex flex-col justify-between w-full">
                                 <div class="w-full min-w-0">
@@ -40,14 +47,22 @@
                                     </div>
 
                                     <div class="flex gap-4 p-0 text-end">
-                                        <p class="text-base font-bold text-gray-900 dark:text-white">
-                                            @if($cart->product->discount)
-
-                                            {{ $cart->product->discount*$cart->count }}
-                                            @else
-                                            {{ $cart->product->price*$cart->count }}
+                                        @php
+                                        $linePrice = $cart->product->display_price * $cart->count;
+                                        $showStrike = $cart->product->total_discount_percent > 0;
+                                        $formattedLinePrice = rtrim(rtrim(number_format($linePrice, 2, '.', ''), '0'), '.');
+                                        $formattedOriginalLinePrice = rtrim(rtrim(number_format($cart->product->price * $cart->count, 2, '.', ''), '0'), '.');
+                                        @endphp
+                                        <div class="text-end">
+                                            <p class="text-base font-bold text-gray-900 dark:text-white">
+                                                {{ $formattedLinePrice }} c
+                                            </p>
+                                            @if($showStrike)
+                                            <p class="text-xs font-medium text-gray-500 line-through">
+                                                {{ $formattedOriginalLinePrice }} c
+                                            </p>
                                             @endif
-                                            c</p>
+                                        </div>
 
 
                                         <button type="button" wire:click="delete({{ $cart->id }})" class="text-base font-bold text-red-500 dark:text-white">Удалит</button>
@@ -72,26 +87,36 @@
 
                     <div class="space-y-2">
                         <div class="space-y-1">
+                            @php
+                            $formattedSubtotal = rtrim(rtrim(number_format($subtotal, 2, '.', ''), '0'), '.');
+                            $formattedDelivery = rtrim(rtrim(number_format($delivery, 2, '.', ''), '0'), '.');
+                            $formattedTax = rtrim(rtrim(number_format($tax, 2, '.', ''), '0'), '.');
+                            $formattedTotal = rtrim(rtrim(number_format($total, 2, '.', ''), '0'), '.');
+                            $formattedCoupon = rtrim(rtrim(number_format($coupone, 2, '.', ''), '0'), '.');
+                            @endphp
                             <dl class="flex items-center justify-between gap-4">
                                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Подытог</dt>
 
-                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $subtotal }}c</dd>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $formattedSubtotal }}c</dd>
 
                             </dl>
 
                             <dl class="flex items-center justify-between gap-4">
                                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Доставка</dt>
-                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $delivery }}с</dd>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $formattedDelivery }}с</dd>
                             </dl>
 
+                            @php
+                            $taxPercent = $subtotal > 0 ? round(($tax / $subtotal) * 100) : 0;
+                            @endphp
                             <dl class="flex items-center justify-between gap-4">
                                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Налог</dt>
-                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $tax }}с - <span class="text-green-500">{{ round($tax/$subtotal*100) }}%</span></dd>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $formattedTax }}с - <span class="text-green-500">{{ $taxPercent }}%</span></dd>
                             </dl>
                             @if($coupone)
                             <dl class="flex items-center justify-between gap-4">
                                 <dt class="text-base font-normal text-gray-500">Скидка</dt>
-                                <dd class="text-base font-medium text-gray-900">{{ round($coupone) }}с </span></dd>
+                                <dd class="text-base font-medium text-gray-900">{{ $formattedCoupon }}с </span></dd>
                             </dl>
                             @endif
                             @if($coupone==0)
@@ -109,7 +134,7 @@
 
                         <dl class="items-center justify-between hidden gap-4 pt-2 border-t border-gray-200 lg:flex dark:border-gray-700">
                             <dt class="text-base font-bold text-gray-900 dark:text-white">Итого</dt>
-                            <dd class="text-base font-bold text-gray-900 dark:text-white">{{ $total }}c</dd>
+                            <dd class="text-base font-bold text-gray-900 dark:text-white">{{ $formattedTotal }}c</dd>
                         </dl>
                     </div>
 
@@ -118,7 +143,7 @@
                     <div class="fixed left-0 block w-full h-24 px-2 bg-white border-t-2 bottom-16 lg:hidden">
                         <dl class="flex items-center justify-between gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
                             <dt class="text-base font-bold text-gray-900 dark:text-white">Итого</dt>
-                            <dd class="text-base font-bold text-gray-900 dark:text-white">{{ $total }}c</dd>
+                            <dd class="text-base font-bold text-gray-900 dark:text-white">{{ $formattedTotal }}c</dd>
                         </dl>
                         <button type="button" wire:click="checkout" class="flex mt-2 w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Перейти к оформлению</button>
 

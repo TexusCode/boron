@@ -19,7 +19,11 @@ class WebController extends Controller
     {
         $products = Product::whereHas('seller', function ($query) {
             $query->where('status', true);
-        })->where('status', true)->inRandomOrder()->paginate(12);
+        })
+            ->where('status', true)
+            ->where('stock', '>', 0)
+            ->orderBy('created_at', 'desc')
+            ->paginate(54);
 
         if ($request->ajax()) {
             $view = view('web.loads', compact('products'))->render();

@@ -27,7 +27,9 @@ class Cart extends Component
     }
     public function couponebutton()
     {
-        $coupon = Coupone::where('code', $this->couponeinput)->first();
+        $coupon = Coupone::where('code', $this->couponeinput)
+            ->where('auto_apply', false)
+            ->first();
 
         if ($coupon) {
             $this->coupone = $coupon->percent;
@@ -69,22 +71,16 @@ class Cart extends Component
             // Делаем редирект или возвращаем ответ
             return response()->json(['client_code' => $code]);
         }
-        $cartItems = ModelsCart::where('cookie', $clientCode);
+        $cartItems = ModelsCart::where('cookie', $clientCode)->get();
         foreach ($cartItems as $item) {
             if ($item->product->stock == 0) {
                 $item->delete();
             }
         }
         $cartItems = ModelsCart::where('cookie', $clientCode)->get();
-        if ($cartItems) {
-            $this->subtotal = $cartItems->sum(function ($item) {
-                if ($item->product->discount) {
-                    return $item->product->discount * $item->count;
-                } else {
-                    return $item->product->price * $item->count;
-                }
-            });
-        }
+        $this->subtotal = $cartItems->sum(function ($item) {
+            return $item->product->display_price * $item->count;
+        });
         $this->delivery = Tax::find(2)->tax;
         $this->tax = Tax::find(1)->tax;
 
