@@ -117,12 +117,14 @@ class AuthController extends Controller
 
     protected function redirectByRole(User $user)
     {
+        $role = strtolower($user->role ?? '');
+
         $map = [
             'admin' => ['route' => 'admin-dashboard', 'message' => 'Добро пожаловать, администратор!'],
             'seller' => ['route' => 'seller-dashboard', 'message' => 'Добро пожаловать, продавец!'],
         ];
 
-        $target = $map[$user->role] ?? ['route' => 'home', 'message' => 'Добро пожаловать!'];
+        $target = $map[$role] ?? ['route' => 'home', 'message' => 'Добро пожаловать!'];
 
         return redirect()->route($target['route'])->with('success', $target['message']);
     }
