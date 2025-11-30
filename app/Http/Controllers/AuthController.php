@@ -29,6 +29,7 @@ class AuthController extends Controller
         $smsResponse = $smsController->sendSms($phone, $message);
         return view('verification');
     }
+    //rewtklerjtlkejtlkj
 
     public function loginpost(Request $request)
     {
