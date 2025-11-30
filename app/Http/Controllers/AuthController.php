@@ -39,7 +39,7 @@ class AuthController extends Controller
 
         (new SmsController())->sendSms($phone, $message);
 
-        return view('verification');
+        return redirect()->route('verification');
     }
 
     public function loginpost(Request $request)
@@ -85,6 +85,23 @@ class AuthController extends Controller
         Session::forget('verification_code');
 
         return $this->redirectByRole($user);
+    }
+
+    public function showVerification()
+    {
+        if (Auth::check()) {
+            return $this->redirectByRole(Auth::user());
+        }
+
+        if (!Session::has('phone')) {
+            return redirect()->route('login')->with('error', 'Введите номер телефона ещё раз.');
+        }
+
+        if (!Session::has('verification_code')) {
+            $this->regenerateVerificationCode();
+        }
+
+        return view('verification');
     }
 
     public function logout(Request $request)
