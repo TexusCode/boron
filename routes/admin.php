@@ -10,7 +10,6 @@ use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\CouponesController;
-use App\Http\Controllers\FacebookFeedController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\Web\MiniatureController;
@@ -87,8 +86,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/cities', [CityController::class, 'cities'])->name('cities');
     Route::post('/city-add', [CityController::class, 'cityadd'])->name('city-add');
     Route::post('/city-del/{id}', [CityController::class, 'cityrdel'])->name('city-del');
-    //Facebook Feeds
-    Route::post('/facebook-feeds', [FacebookFeedController::class, 'index'])->name('facebook-feeds');
-    //Truncate
-    Route::post('/truncate', [FacebookFeedController::class, 'truncate'])->name('truncate');
 });
