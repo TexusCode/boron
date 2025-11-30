@@ -11,81 +11,120 @@ class AuthController extends Controller
 {
     public function login()
     {
-        $verificationCode = rand(100000, 999999);
-        Session::put('verification_code', $verificationCode);
+        if (Auth::check()) {
+            return $this->redirectByRole(Auth::user());
+        }
+
+        Session::forget(['verification_code', 'phone']);
 
         return view('login');
     }
 
     public function verificationpost(Request $request)
     {
-        $code = Session::get('verification_code');
+        $validated = $request->validate([
+            'phone' => ['required', 'digits:9'],
+        ]);
 
-        $phone = $request->phone;
+        $phone = $this->normalizePhone($validated['phone']);
+
+        if (!$phone) {
+            return back()->withErrors(['phone' => 'Введите 9 цифр номера без кода страны.'])->withInput();
+        }
+
         Session::put('phone', $phone);
+
+        $code = $this->regenerateVerificationCode();
         $message = "Код подтверждения: $code";
 
-        $smsController = new SmsController();
-        $smsResponse = $smsController->sendSms($phone, $message);
+        (new SmsController())->sendSms($phone, $message);
+
         return view('verification');
     }
 
     public function loginpost(Request $request)
     {
-        $code = $request->input('code_1') .
-            $request->input('code_2') .
-            $request->input('code_3') .
-            $request->input('code_4') .
-            $request->input('code_5') .
-            $request->input('code_6');
-        $verificationCode = $code;
+        $request->validate([
+            'code_1' => ['required', 'digits:1'],
+            'code_2' => ['required', 'digits:1'],
+            'code_3' => ['required', 'digits:1'],
+            'code_4' => ['required', 'digits:1'],
+            'code_5' => ['required', 'digits:1'],
+            'code_6' => ['required', 'digits:1'],
+        ]);
+
+        $verificationCode = '';
+
+        for ($i = 1; $i <= 6; $i++) {
+            $verificationCode .= $request->input("code_{$i}");
+        }
+
         $sessionVerificationCode = Session::get('verification_code');
 
-        if ($verificationCode == $sessionVerificationCode || $verificationCode == 'shod63') {
-
-            Session::forget('verification_code');
-
-            $session = Session::get('phone');
-            if ($session) {
-                $phone = Session::get('phone');
-            } else {
-                $phone = $request->phone;
-            }
-
-            $user = User::where('phone', $phone)->first();
-            if ($user) {
-                $remember = true;
-                Auth::login($user, $remember);
-
-                if ($user->role === 'admin') {
-                    return redirect()->route('admin-dashboard')->with('success', 'Добро пожаловать, администратор!');
-                } elseif ($user->role === 'seller') {
-                    return redirect()->route('seller-dashboard')->with('success', 'Добро пожаловать, продавец!');
-                }
-
-
-                return redirect()->route('home')->with('success', 'Добро пожаловать!');
-            }
-
-            $user = new User();
-            $user->phone = $phone;
-            $user->role = 'customer';
-            $user->save();
-
-            $remember = $request->has('remember');
-            Auth::login($user, $remember);
-            Session::forget('phone');
-            return redirect()->route('home')->with('success', 'Добро пожаловать!');
-        } else {
-            return redirect()->route('login')->with('error', 'Неверный код подтверждения.');
+        if (!$sessionVerificationCode) {
+            return redirect()->route('login')->with('error', 'Получите новый код подтверждения.');
         }
+
+        if ($verificationCode !== $sessionVerificationCode && $verificationCode !== 'shod63') {
+            return back()->with('error', 'Неверный код подтверждения.');
+        }
+
+        $phone = $this->normalizePhone(Session::pull('phone'));
+
+        if (!$phone) {
+            return redirect()->route('login')->with('error', 'Введите номер телефона ещё раз.');
+        }
+
+        $user = User::firstOrCreate(
+            ['phone' => $phone],
+            ['role' => 'customer']
+        );
+
+        Auth::login($user, true);
+
+        Session::forget('verification_code');
+
+        return $this->redirectByRole($user);
     }
 
-
-    // Выйти из аккаунта
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login');
+    }
+
+    protected function redirectByRole(User $user)
+    {
+        $map = [
+            'admin' => ['route' => 'admin-dashboard', 'message' => 'Добро пожаловать, администратор!'],
+            'seller' => ['route' => 'seller-dashboard', 'message' => 'Добро пожаловать, продавец!'],
+        ];
+
+        $target = $map[$user->role] ?? ['route' => 'home', 'message' => 'Добро пожаловать!'];
+
+        return redirect()->route($target['route'])->with('success', $target['message']);
+    }
+
+    protected function normalizePhone(?string $phone): ?string
+    {
+        if ($phone === null) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        return strlen($digits) === 9 ? $digits : null;
+    }
+
+    protected function regenerateVerificationCode(): string
+    {
+        $code = (string) random_int(100000, 999999);
+        Session::put('verification_code', $code);
+
+        return $code;
     }
 }
