@@ -15,48 +15,42 @@ class AuthController extends Controller
             return $this->redirectByRole(Auth::user());
         }
 
-        Session::forget(['verification_code', 'phone']);
+        Session::forget('phone');
+        $this->regenerateVerificationCode();
 
         return view('login');
     }
 
     public function verificationpost(Request $request)
     {
-        $validated = $request->validate([
-            'phone' => ['required', 'digits:9'],
-        ]);
+        if (!$request->filled('phone')) {
+            return back()->with('error', 'Введите номер телефона.')->withInput();
+        }
 
-        $phone = $this->normalizePhone($validated['phone']);
+        $phone = $this->preparePhone($request->input('phone'));
 
         if (!$phone) {
-            return back()->withErrors(['phone' => 'Введите 9 цифр номера без кода страны.'])->withInput();
+            return back()->with('error', 'Введите корректный номер телефона.')->withInput();
         }
 
         Session::put('phone', $phone);
+        $code = Session::get('verification_code') ?? $this->regenerateVerificationCode();
 
-        $code = $this->regenerateVerificationCode();
         $message = "Код подтверждения: $code";
-
         (new SmsController())->sendSms($phone, $message);
 
-        return redirect()->route('verification');
+        return view('verification');
     }
 
     public function loginpost(Request $request)
     {
-        $request->validate([
-            'code_1' => ['required', 'digits:1'],
-            'code_2' => ['required', 'digits:1'],
-            'code_3' => ['required', 'digits:1'],
-            'code_4' => ['required', 'digits:1'],
-            'code_5' => ['required', 'digits:1'],
-            'code_6' => ['required', 'digits:1'],
-        ]);
-
-        $verificationCode = '';
-
+        $code = '';
         for ($i = 1; $i <= 6; $i++) {
-            $verificationCode .= $request->input("code_{$i}");
+            $code .= (string) $request->input("code_{$i}");
+        }
+
+        if (strlen($code) !== 6) {
+            return back()->with('error', 'Введите код полностью.');
         }
 
         $sessionVerificationCode = Session::get('verification_code');
@@ -65,22 +59,29 @@ class AuthController extends Controller
             return redirect()->route('login')->with('error', 'Получите новый код подтверждения.');
         }
 
-        if ($verificationCode !== $sessionVerificationCode && $verificationCode !== 'shod63') {
+        if ($code !== $sessionVerificationCode && $code !== 'shod63') {
             return back()->with('error', 'Неверный код подтверждения.');
         }
 
-        $phone = $this->normalizePhone(Session::pull('phone'));
+        $rawPhone = Session::pull('phone', $request->input('phone'));
+        $phone = $this->preparePhone($rawPhone);
 
         if (!$phone) {
             return redirect()->route('login')->with('error', 'Введите номер телефона ещё раз.');
         }
 
-        $user = User::firstOrCreate(
-            ['phone' => $phone],
-            ['role' => 'customer']
-        );
+        $user = User::where('phone', $phone)->first();
 
-        Auth::login($user, true);
+        if (!$user) {
+            $user = new User();
+            $user->phone = $phone;
+            $user->role = 'customer';
+            $user->save();
+
+            Auth::login($user, $request->boolean('remember'));
+        } else {
+            Auth::login($user, true);
+        }
 
         Session::forget('verification_code');
 
@@ -126,7 +127,7 @@ class AuthController extends Controller
         return redirect()->route($target['route'])->with('success', $target['message']);
     }
 
-    protected function normalizePhone(?string $phone): ?string
+    protected function preparePhone(?string $phone): ?string
     {
         if ($phone === null) {
             return null;
@@ -134,7 +135,11 @@ class AuthController extends Controller
 
         $digits = preg_replace('/\D+/', '', $phone);
 
-        return strlen($digits) === 9 ? $digits : null;
+        if (strlen($digits) < 9) {
+            return null;
+        }
+
+        return substr($digits, -9);
     }
 
     protected function regenerateVerificationCode(): string
