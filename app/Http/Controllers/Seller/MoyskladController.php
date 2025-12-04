@@ -30,19 +30,19 @@ class MoyskladController extends Controller
     }
 
 
-public function moyskladbigupdate()
-{
-    $user = Auth::user();
-    $seller = $user->seller;
+    public function moyskladbigupdate()
+    {
+        $user = Auth::user();
+        $seller = $user->seller;
 
-    MoyskladBigUpdateJob::dispatch(
-        $seller->moysklad_login,
-        $seller->moysklad_password,
-        $seller->id
-    );
+        MoyskladBigUpdateJob::dispatch(
+            $seller->moysklad_login,
+            $seller->moysklad_password,
+            $seller->id
+        );
 
-    return back()->with('success', 'Загрузка товаров запущена в фоне.');
-}
+        return back()->with('success', 'Загрузка товаров запущена в фоне.');
+    }
 
     public function settings()
     {
@@ -129,5 +129,4 @@ public function moyskladbigupdate()
 
         return back()->with('success', 'Успешно обновлено количество товаров: ' . $count);
     }
-
 }
