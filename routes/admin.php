@@ -62,6 +62,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/orders-delivered', [OrderController::class, 'ordersdelivered'])->name('orders-delivered');
     Route::get('/orders-sended', [OrderController::class, 'orderssended'])->name('orders-sended');
     Route::get('/order-details/{id}', [OrderController::class, 'orderdetails'])->name('order-details');
+    Route::post('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::post('/orders/{order}/deliver', [OrderController::class, 'assignDeliver'])->name('orders.assign-deliver');
+    Route::delete('/order/{order}', [OrderController::class, 'destroy'])->name('order-destroy');
 
     //Dashboard
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('admin-dashboard');

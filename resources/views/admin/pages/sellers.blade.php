@@ -1,91 +1,167 @@
 @extends('admin.layouts.app')
+
 @section('content')
-<div>
-    <section class="">
-        <div class="">
-            <div class="">
-                <div class="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
-                    <div class="flex items-center flex-1 space-x-4">
-                        <h5>
-                            <span class="text-gray-500">Все продавцы:</span>
-                            <span class="">{{ $sellers->count() }}</span>
-                        </h5>
-                    </div>
-                    <div class="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
-                        <a href="{{ route('add-seller') }}" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none">
-                            <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                            </svg>
-                            Добавить новый продавец
-                        </a>
-                    </div>
-                </div>
-                <div class="mt-4 overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 ">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">Название</th>
-                                <th scope="col" class="px-4 py-3">Товары в наличии</th>
-                                <th scope="col" class="px-4 py-3">Продажи</th>
-                                <th scope="col" class="px-4 py-3">Статус</th>
-                                <th scope="col" class="px-4 py-3">Дата регистрация</th>
-                                <th scope="col" class="flex justify-end px-4 py-3">Дейстивия</th>
+@php
+    $sellerTabs = [
+        ['route' => 'sellers', 'label' => 'Все продавцы', 'key' => 'all'],
+        ['route' => 'peending-sellers', 'label' => 'На модерации', 'key' => 'pending'],
+    ];
+    $filters = $filters ?? [];
+    $activeTab = $activeTab ?? 'all';
+    $filterRoute = $activeTab === 'pending' ? route('peending-sellers') : route('sellers');
+@endphp
 
-                            </tr>
-                        </thead>
-                        <tbody class="">
-                            @foreach ($sellers as $seller)
-                            <tr class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+<section class="space-y-6">
+    <header class="rounded-3xl bg-white p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Продавцы</p>
+                <h1 class="text-3xl font-semibold text-gray-900">Управление партнёрами</h1>
+                <p class="text-sm text-gray-500">Следите за статусами магазинов, продажами и документами.</p>
+            </div>
+            <a href="{{ route('add-seller') }}" class="inline-flex items-center rounded-2xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">
+                + Новый продавец
+            </a>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-3 text-xs font-semibold">
+            @foreach ($sellerTabs as $tab)
+                <a href="{{ route($tab['route']) }}"
+                    @class([
+                        'rounded-full px-4 py-2 transition',
+                        'bg-indigo-600 text-white shadow' => $activeTab === $tab['key'],
+                        'bg-gray-100 text-gray-600 hover:bg-gray-200' => $activeTab !== $tab['key'],
+                    ])>
+                    {{ $tab['label'] }}
+                </a>
+            @endforeach
+        </div>
+    </header>
 
-                                <th scope="row" class="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">
-                                    <img src="{{ asset('storage/'.$seller->logo) }}" alt="{{ $seller->store_name }}" class="w-auto h-8 mr-3">
-
-
-                                    {{ $seller->store_name }}
-                                </th>
-                                <td class="px-4 py-2">
-                                    {{ $seller->products->sum('stock') }}шт
-                                </td>
-                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">{{ $seller->products->sum('sell') }}шт</td>
-
-                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">
-                                    <div class="flex items-center">
-                                        @if($seller->status == 1)
-                                        <div class="inline-block w-4 h-4 mr-2 bg-green-700 rounded-full"></div>
-                                        Активно
-                                        @else
-                                        <div class="inline-block w-4 h-4 mr-2 bg-red-700 rounded-full"></div>
-                                        Не активно
-
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap ">{{ $seller->register_date }}</td>
-                                <td class="px-4 py-2 font-medium text-gray-900 w-min whitespace-nowrap">
-                                    <div class="flex justify-end gap-2">
-                                        <a href="">
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </a>
-                                        <a href="{{ route('show-seller',$seller->id) }}">
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                <path fill-rule="evenodd" d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z" clip-rule="evenodd" />
-                                                <path fill-rule="evenodd" d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </td>
-
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
+    <form method="GET" action="{{ $filterRoute }}" class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm space-y-4">
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Поиск</label>
+                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Название или телефон"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Статус</label>
+                <select name="status" class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Все</option>
+                    <option value="active" @selected(($filters['status'] ?? '') === 'active')>Активные</option>
+                    <option value="inactive" @selected(($filters['status'] ?? '') === 'inactive')>Неактивные</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Верификация</label>
+                <select name="verified" class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Все</option>
+                    <option value="yes" @selected(($filters['verified'] ?? '') === 'yes')>Проверенные</option>
+                    <option value="no" @selected(($filters['verified'] ?? '') === 'no')>Без значка</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Сортировка</label>
+                <select name="sort" class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="newest" @selected(($filters['sort'] ?? 'newest') === 'newest')>Сначала новые</option>
+                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Сначала старые</option>
+                    <option value="name_asc" @selected(($filters['sort'] ?? '') === 'name_asc')>Имя A→Я</option>
+                    <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>Имя Я→A</option>
+                </select>
             </div>
         </div>
-    </section>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Дата от</label>
+                <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-gray-500">Дата до</label>
+                <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <button type="submit" class="inline-flex items-center rounded-2xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">
+                Применить фильтры
+            </button>
+            <a href="{{ route($activeTab === 'pending' ? 'peending-sellers' : 'sellers') }}" class="inline-flex items-center rounded-2xl bg-gray-100 px-5 py-2 text-sm font-semibold text-gray-600">
+                Сбросить
+            </a>
+        </div>
+    </form>
 
-</div>
+    <div class="rounded-3xl border border-gray-100 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-100 text-sm text-gray-600">
+                <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Магазин</th>
+                        <th class="px-5 py-3 text-left">Кол-во товаров</th>
+                        <th class="px-5 py-3 text-left">Продано</th>
+                        <th class="px-5 py-3 text-left">Статус</th>
+                        <th class="px-5 py-3 text-left">Регистрация</th>
+                        <th class="px-5 py-3 text-right">Действия</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 bg-white">
+                    @foreach ($sellers as $seller)
+                        @php
+                            $logo = $seller->logo ? asset('storage/' . $seller->logo) : asset('images/placeholders/product-empty.svg');
+                            $statusBadge = $seller->status
+                                ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+                                : 'bg-rose-50 text-rose-700 ring-rose-200';
+                            $verifiedBadge = $seller->isverified
+                                ? 'bg-indigo-50 text-indigo-600 ring-indigo-200'
+                                : 'bg-gray-100 text-gray-500 ring-gray-200';
+                        @endphp
+                        <tr class="hover:bg-gray-50/70">
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-12 w-12 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+                                        <img src="{{ $logo }}" alt="{{ $seller->store_name }}" class="h-full w-full object-cover">
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">{{ $seller->store_name }}</p>
+                                        <p class="text-xs text-gray-500">+992 {{ $seller->store_phone }}</p>
+                                        <span class="mt-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 {{ $verifiedBadge }}">
+                                            {{ $seller->isverified ? 'Проверен' : 'Не проверен' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-4 text-sm font-semibold text-gray-900">{{ $seller->products->sum('stock') }} шт.</td>
+                            <td class="px-5 py-4 text-sm font-semibold text-gray-900">{{ $seller->products->sum('sell') ?? 0 }} шт.</td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $statusBadge }}">
+                                    <span>●</span>{{ $seller->status ? 'Активен' : 'Не активен' }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 text-sm">{{ $seller->register_date ?? '-' }}</td>
+                            <td class="px-5 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <form action="{{ route('activate-seller', $seller->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100">
+                                            {{ $seller->status ? 'Заморозить' : 'Активировать' }}
+                                        </button>
+                                    </form>
+                                    <a href="{{ route('show-seller', $seller->id) }}"
+                                        class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-600 hover:text-white">
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="border-t border-gray-100 px-5 py-4">
+            {{ $sellers->links('pagination::simple-tailwind') }}
+        </div>
+    </div>
+</section>
 @endsection

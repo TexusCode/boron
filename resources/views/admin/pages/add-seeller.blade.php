@@ -1,57 +1,77 @@
 @extends('admin.layouts.app')
+
 @section('content')
-<form action="{{ route('seller-register') }}" method="POST" enctype="multipart/form-data" class="rounded lg:p-0 lg:grid lg:grid-cols-2 lg:gap-4">
-    @csrf
-    <div class="col-span-full">
-        <h1 class="mb-4 text-3xl font-bold text-gray-800">Регистрация продавца</h1>
+@php
+    $isAdmin = Auth::check() && Auth::user()->role === 'admin';
+@endphp
 
-    </div>
-    <!-- Название магазина -->
-    <div class="mb-2">
-        <label for="store_name" class="block mb-2 font-bold text-gray-700">Название магазина</label>
-        <input type="text" name="store_name" id="store_name" required placeholder="Введите название магазина" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-    </div>
+<section class="space-y-6">
+    <header class="rounded-3xl bg-white p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Продавцы</p>
+                <h1 class="text-3xl font-semibold text-gray-900">Регистрация продавца</h1>
+                <p class="text-sm text-gray-500">Заполните данные магазина и загрузите документы для проверки.</p>
+            </div>
+            <a href="{{ route('sellers') }}"
+                class="inline-flex items-center rounded-2xl border border-gray-200 px-5 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+                ← Вернуться к списку
+            </a>
+        </div>
+    </header>
 
-    <!-- Телефон магазина -->
-    <div class="mb-2">
-        <label for="store_phone" class="block mb-2 font-bold text-gray-700">Телефон магазина</label>
-        <input type="text" name="store_phone" id="store_phone" required placeholder="Введите телефон магазина" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-    </div>
+    <form action="{{ route('seller-register') }}" method="POST" enctype="multipart/form-data"
+        class="grid gap-6 lg:grid-cols-2">
+        @csrf
+        <div class="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Информация о магазине</p>
+            <div>
+                <label for="store_name" class="text-sm font-semibold text-gray-700">Название магазина</label>
+                <input type="text" name="store_name" id="store_name" required placeholder="Boron Market"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label for="store_phone" class="text-sm font-semibold text-gray-700">Телефон</label>
+                <input type="text" name="store_phone" id="store_phone" required placeholder="+992 900 00 00 00"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label for="description" class="text-sm font-semibold text-gray-700">Описание</label>
+                <textarea name="description" id="description" rows="5" placeholder="Кратко расскажите о магазине"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+            </div>
+        </div>
 
-    <!-- Описание -->
-    <div class="mb-2 col-span-full">
-        <label for="description" class="block mb-2 font-bold text-gray-700">Описание</label>
-        <textarea name="description" id="description" placeholder="Введите краткое описание" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200"></textarea>
-    </div>
+        <div class="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Документы</p>
+            <label class="flex flex-col rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500">
+                <span class="font-semibold text-gray-900">Логотип магазина</span>
+                <input type="file" name="logo" id="logo" class="mt-3 text-sm text-gray-500" {{ $isAdmin ? '' : 'required' }}>
+            </label>
+            <label class="flex flex-col rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500">
+                <span class="font-semibold text-gray-900">Патент</span>
+                <input type="file" name="patent" id="patent" class="mt-3 text-sm text-gray-500" {{ $isAdmin ? '' : 'required' }}>
+            </label>
+            <label class="flex flex-col rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500">
+                <span class="font-semibold text-gray-900">Паспорт (лицевой)</span>
+                <input type="file" name="passport_front" id="passport_front" class="mt-3 text-sm text-gray-500" {{ $isAdmin ? '' : 'required' }}>
+            </label>
+            <label class="flex flex-col rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500">
+                <span class="font-semibold text-gray-900">Паспорт (оборот)</span>
+                <input type="file" name="passport_back" id="passport_back" class="mt-3 text-sm text-gray-500" {{ $isAdmin ? '' : 'required' }}>
+            </label>
+        </div>
 
-    <!-- Логотип -->
-    <div class="mb-2">
-        <label for="logo" class="block mb-2 font-bold text-gray-700">Логотип магазина</label>
-        <input type="file" name="logo" id="logo" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Патент -->
-    <div class="mb-2">
-        <label for="patent" class="block mb-2 font-bold text-gray-700">Документ патента</label>
-        <input type="file" name="patent" id="patent" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Паспорт (лицевая сторона) -->
-    <div class="mb-2">
-        <label for="passport_front" class="block mb-2 font-bold text-gray-700">Паспорт (лицевая сторона)</label>
-        <input type="file" name="passport_front" id="passport_front" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Паспорт (обратная сторона) -->
-    <div class="mb-2">
-        <label for="passport_back" class="block mb-2 font-bold text-gray-700">Паспорт (обратная сторона)</label>
-        <input type="file" name="passport_back" id="passport_back" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Кнопка отправки -->
-    <div class="flex justify-center lg:justify-start">
-        <button type="submit" class="w-full px-6 py-2 font-semibold text-white bg-blue-600 rounded-lg lg:w-min hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200">Регистрация</button>
-    </div>
-</form>
-
+        <div class="lg:col-span-2 flex justify-end gap-3">
+            <a href="{{ route('sellers') }}"
+                class="inline-flex items-center rounded-2xl border border-gray-200 px-5 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+                Отмена
+            </a>
+            <button type="submit"
+                class="inline-flex items-center rounded-2xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">
+                Зарегистрировать продавца
+            </button>
+        </div>
+    </form>
+</section>
 @endsection

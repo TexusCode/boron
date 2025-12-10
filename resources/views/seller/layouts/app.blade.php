@@ -162,7 +162,7 @@
             ];
         @endphp
         <aside
-            class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white shadow-2xl pt-14 md:translate-x-0"
+            class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform -translate-x-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white shadow-2xl pt-14 md:translate-x-0"
             aria-label="Sidenav" id="drawer-navigation">
             <div class="flex flex-col h-full px-4 pb-6 overflow-y-auto mt-4">
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm backdrop-blur-md">
