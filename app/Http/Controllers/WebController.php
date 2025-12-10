@@ -22,7 +22,7 @@ class WebController extends Controller
         })
             ->where('status', true)
             ->where('stock', '>', 0)
-            ->orderBy('created_at', 'desc')
+            ->inRandomOrder()
             ->paginate(54);
 
         if ($request->ajax()) {
