@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\SmsController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class PagesController extends Controller
 {
@@ -53,5 +55,35 @@ class PagesController extends Controller
     {
         $smsController = new SmsController();
         $smsController->sendSms($phone, $message);
+    }
+
+    public function account()
+    {
+        $admin = Auth::user();
+        return view('admin.pages.account', compact('admin'));
+    }
+
+    public function updateAccount(Request $request)
+    {
+        $admin = Auth::user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $admin->id],
+            'phone' => ['nullable', 'string', 'max:32'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $admin->name = $validated['name'];
+        $admin->email = $validated['email'];
+        $admin->phone = $validated['phone'];
+
+        if (!empty($validated['password'])) {
+            $admin->password = Hash::make($validated['password']);
+        }
+
+        $admin->save();
+
+        return back()->with('success', 'Данные аккаунта обновлены.');
     }
 }

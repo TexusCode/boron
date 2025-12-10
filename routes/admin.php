@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\CouponesController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\TaxController;
+use App\Http\Controllers\FacebookFeedController;
 use App\Http\Controllers\Web\MiniatureController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +69,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/sms-page', [PagesController::class, 'smspage'])->name('sms-page');
     Route::post('/onesms', [PagesController::class, 'onesms'])->name('onesms');
     Route::post('/sms-many', [PagesController::class, 'smsmany'])->name('sms-many');
+    Route::get('/account', [PagesController::class, 'account'])->name('admin.account');
+    Route::post('/account', [PagesController::class, 'updateAccount'])->name('admin.account.update');
     //Coupones
     Route::get('/coupones', [CouponesController::class, 'coupones'])->name('coupones');
     Route::post('/add-coupones', [CouponesController::class, 'addcoupones'])->name('add-coupones');
@@ -76,6 +79,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/setting', [TaxController::class, 'setting'])->name('setting');
     Route::post('/tax', [TaxController::class, 'tax'])->name('tax');
     Route::post('/delivery', [TaxController::class, 'delivery'])->name('delivery');
+    Route::post('/facebook-feeds', [FacebookFeedController::class, 'index'])->name('facebook-feeds');
     //imageoptomozer
     Route::post('/imageoptomozer', [MiniatureController::class, 'imageoptomozer'])->name('imageoptomozer');
     //Sliders
@@ -86,4 +90,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/cities', [CityController::class, 'cities'])->name('cities');
     Route::post('/city-add', [CityController::class, 'cityadd'])->name('city-add');
     Route::post('/city-del/{id}', [CityController::class, 'cityrdel'])->name('city-del');
+    Route::post('/facebook-feeds', [FacebookFeedController::class, 'index'])->name('facebook-feeds');
+    //Truncate
+    Route::post('/truncate', [FacebookFeedController::class, 'truncate'])->name('truncate');
 });
