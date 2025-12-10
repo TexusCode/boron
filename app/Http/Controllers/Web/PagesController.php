@@ -90,6 +90,8 @@ class PagesController extends Controller
         // Создаем подзаказы
         $suborders = Cart::where('cookie', $clientCode)->get();
 
+        $sellerIds = [];
+
         foreach ($suborders as $suborder) {
             $product = Product::find($suborder->product_id);
             $discount = 0; // Initialize discount with a default value
@@ -114,9 +116,29 @@ class PagesController extends Controller
                     'seller_id' => $product->seller->id,
                     'status' => 'Ожидание',
                 ]);
+
+                $sellerIds[] = $product->seller->id;
             }
         }
 
+        $sellerIds = array_unique(array_filter($sellerIds));
+        if (!empty($sellerIds)) {
+            $sellers = Seller::with('user')->whereIn('id', $sellerIds)->get();
+            $sellerSmsController = new SmsController();
+
+            foreach ($sellers as $sellerModel) {
+                $sellerPhone = $sellerModel->store_phone ?? optional($sellerModel->user)->phone;
+
+                if (!$sellerPhone) {
+                    continue;
+                }
+
+                $sellerMessage = "Ассалому алейкум, {$sellerModel->store_name}!\n"
+                    . "У вас новый заказ №{$order->id}. Пожалуйста, подтвердите товары в панели продавца.";
+
+                $sellerSmsController->sendSms($sellerPhone, $sellerMessage);
+            }
+        }
 
         // Очистка данных заказа
         $ordercheckout->delete();
@@ -124,6 +146,8 @@ class PagesController extends Controller
 
         if (Auth::check()) {
             $message = "Ассалому алейкум, {$user->name}!\nВаш заказ №{$order->id} успешно получен!\nСтатус: Ожидание.\nМы уведомим вас, как только заказ будет подтвержден.\nСпасибо, что выбрали нас!";
+            $smsController = new SmsController();
+            $smsController->sendSms("933604040", "Ассалому алейкум, {$user->name}!\nУ вас заказ №{$order->id} успешно получен!\nСтатус: Ожидание.");
         } else {
             $verificationCode = rand(100000, 999999);
             Session::put('verification_code', $verificationCode);

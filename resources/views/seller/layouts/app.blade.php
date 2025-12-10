@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,23 +10,33 @@
     @yield('styles')
     @include('global.vite')
 </head>
+
 <body>
     <div class="antialiased bg-gray-50 dark:bg-gray-900">
         {{-- Navbar --}}
-        <nav class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
+        <nav
+            class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 border-b border-white/10 px-4 py-2.5 text-white fixed left-0 right-0 top-0 z-50 shadow-lg">
             <div class="flex flex-wrap items-center justify-between">
                 <div class="flex items-center justify-start">
-                    <button data-drawer-target="drawer-navigation" data-drawer-toggle="drawer-navigation" aria-controls="drawer-navigation" class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    <button data-drawer-target="drawer-navigation" data-drawer-toggle="drawer-navigation"
+                        aria-controls="drawer-navigation"
+                        class="p-2 mr-2 text-slate-200 rounded-lg cursor-pointer md:hidden hover:text-white hover:bg-white/10 focus:bg-white/10 focus:ring-2 focus:ring-white/30">
+                        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                clip-rule="evenodd"></path>
                         </svg>
-                        <svg aria-hidden="true" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        <svg aria-hidden="true" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
                         </svg>
                         <span class="sr-only">Toggle sidebar</span>
                     </button>
-                    <a href="{{ route('seller-dashboard') }}" class="flex items-center justify-between mr-4">
-                        <span class="self-center text-2xl font-extrabold uppercase">boron.tj</span>
+                    <a href="{{ route('seller-dashboard') }}" class="flex items-center justify-between mr-4 text-white">
+                        <span class="self-center text-2xl font-extrabold uppercase tracking-wide">boron.tj</span>
                     </a>
 
                 </div>
@@ -77,15 +88,39 @@
                         </a>
                     </div> --}}
 
-                    <button type="button" class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
+                    <button type="button"
+                        class="flex mx-3 text-sm bg-white/10 rounded-full md:mr-0 focus:ring-4 focus:ring-white/30"
+                        id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
                         <span class="sr-only">Open user menu</span>
-                        <img class="w-8 h-8 bg-black rounded-full" src="" alt="user photo" />
+                        @php
+                            $sellerUser = Auth::user();
+                            $sellerName = trim($sellerUser->name ?? '');
+                            $initials = '??';
+
+                            if ($sellerName !== '') {
+                                $parts = preg_split('/\s+/u', $sellerName, -1, PREG_SPLIT_NO_EMPTY);
+                                $firstChar = mb_substr($parts[0], 0, 1);
+                                $secondChar = isset($parts[1])
+                                    ? mb_substr($parts[1], 0, 1)
+                                    : (mb_strlen($parts[0]) > 1
+                                        ? mb_substr($parts[0], 1, 1)
+                                        : '');
+                                $initials = mb_strtoupper($firstChar . $secondChar);
+                            }
+                        @endphp
+                        <div
+                            class="flex items-center justify-center w-8 h-8 font-semibold text-white uppercase rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
+                            {{ $initials }}
+                        </div>
                     </button>
                     <!-- Dropdown menu -->
-                    <div class="z-50 hidden w-56 my-4 text-base list-none bg-white divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl" id="dropdown">
+                    <div class="z-50 hidden w-56 my-4 text-base list-none bg-white divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
+                        id="dropdown">
                         <div class="px-4 py-3">
-                            <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name }}</span>
-                            <span class="block text-sm text-gray-900 truncate dark:text-white">+992 {{ Auth::user()->phone }}</span>
+                            <span
+                                class="block text-sm font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name }}</span>
+                            <span class="block text-sm text-gray-900 truncate dark:text-white">+992
+                                {{ Auth::user()->phone }}</span>
                         </div>
                         {{-- <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
                             <li>
@@ -100,7 +135,9 @@
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="block w-full px-4 py-2 text-sm font-bold text-red-500 uppercase hover:bg-red-100">Выйти из аккаунта</button>
+                                <button type="submit"
+                                    class="block w-full px-4 py-2 text-sm font-bold text-red-500 uppercase hover:bg-red-100">Выйти
+                                    из аккаунта</button>
                             </form>
                         </ul>
                     </div>
@@ -108,96 +145,216 @@
             </div>
         </nav>
         <!-- Sidebar -->
-        <aside class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-white border-r border-gray-200 pt-14 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidenav" id="drawer-navigation">
-            <div class="h-full px-3 py-5 overflow-y-auto bg-white dark:bg-gray-800">
+        @php
+            $sellerProfile = Auth::user()->seller;
+            $ordersRoutes = [
+                'orders-seller',
+                'orders-peending-seller',
+                'orders-confirmed-seller',
+                'orders-delivered-seller',
+                'orders-cancelled-seller',
+            ];
+            $productsRoutes = [
+                'all-products-seller',
+                'peending-products-selle',
+                'products-not-stock-selle',
+                'add-product-selle',
+            ];
+        @endphp
+        <aside
+            class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white shadow-2xl pt-14 md:translate-x-0"
+            aria-label="Sidenav" id="drawer-navigation">
+            <div class="flex flex-col h-full px-4 pb-6 overflow-y-auto mt-4">
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm backdrop-blur-md">
+                    <p class="text-xs uppercase tracking-[0.25em] text-slate-300">Ваш магазин</p>
+                    <h2 class="mt-2 text-lg font-semibold">{{ $sellerProfile->store_name ?? 'Без названия' }}</h2>
+                    <p class="text-xs text-slate-300">ID продавца: {{ $sellerProfile->id ?? '—' }}</p>
+                    <div
+                        class="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-200">
+                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+                        {{ $sellerProfile && $sellerProfile->status ? 'Активен' : 'На проверке' }}
+                    </div>
+                </div>
+
                 {{-- Menu --}}
-                <ul class="space-y-2">
+                <ul class="mt-6 space-y-2 text-sm font-medium">
                     {{-- Dashboard --}}
                     <li>
-                        <a href="{{ route('seller-dashboard') }}" class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <svg aria-hidden="true" class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <a href="{{ route('seller-dashboard') }}" @class([
+                            'flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200',
+                            'bg-white text-slate-900 shadow-lg' => request()->routeIs(
+                                'seller-dashboard'),
+                            'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs(
+                                'seller-dashboard'),
+                        ])>
+                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                                 <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                             </svg>
-                            <span class="ml-3">Панель управление</span>
+                            <span>Панель управления</span>
                         </a>
                     </li>
+
                     {{-- Orders --}}
                     <li>
-                        <button type="button" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 " aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
-                            <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="flex-1 ml-3 text-left whitespace-nowrap">Заказы</span>
-                            <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                        <ul id="dropdown-pages" class="hidden py-2 space-y-0">
-                            <li>
-                                <a href="{{ route('orders-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Все заказы</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('orders-peending-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">В ожидании</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('orders-confirmed-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Подтверждено</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('orders-delivered-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Доставлено</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('orders-cancelled-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Отменено</a>
-                            </li>
-                        </ul>
+                        <div class="rounded-2xl bg-white/5">
+                            <button type="button"
+                                class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-slate-100 transition hover:bg-white/10"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="flex-1">Заказы</span>
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <ul id="dropdown-pages" class="hidden space-y-1 px-4 py-3 text-xs text-slate-200">
+                                <li>
+                                    <a href="{{ route('orders-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs('orders-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('orders-seller'),
+                                    ])>
+                                        Все заказы
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('orders-peending-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'orders-peending-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('orders-peending-seller'),
+                                    ])>
+                                        В ожидании
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('orders-confirmed-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'orders-confirmed-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('orders-confirmed-seller'),
+                                    ])>
+                                        Подтверждено
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('orders-delivered-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'orders-delivered-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('orders-delivered-seller'),
+                                    ])>
+                                        Доставлено
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('orders-cancelled-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'orders-cancelled-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('orders-cancelled-seller'),
+                                    ])>
+                                        Отменено
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+
                     {{-- Products --}}
                     <li>
-                        <button type="button" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 " aria-controls="dropdown-sales" data-collapse-toggle="dropdown-sales">
-
-                            <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-
-                                <path fill-rule="evenodd" d="M5 3a1 1 0 0 0 0 2h.687L7.82 15.24A3 3 0 1 0 11.83 17h2.34A3 3 0 1 0 17 15H9.813l-.208-1h8.145a1 1 0 0 0 .979-.796l1.25-6A1 1 0 0 0 19 6h-2.268A2 2 0 0 1 15 9a2 2 0 1 1-4 0 2 2 0 0 1-1.732-3h-1.33L7.48 3.796A1 1 0 0 0 6.5 3H5Z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M14 5a1 1 0 1 0-2 0v1h-1a1 1 0 1 0 0 2h1v1a1 1 0 1 0 2 0V8h1a1 1 0 1 0 0-2h-1V5Z" clip-rule="evenodd" />
-                            </svg>
-
-
-                            <span class="flex-1 ml-3 text-left whitespace-nowrap">Товары</span>
-                            <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                        <ul id="dropdown-sales" class="hidden py-2 space-y-0">
-                            <li>
-                                <a href="{{ route('all-products-seller') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Все товары</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('peending-products-selle') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">В ожидании</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('products-not-stock-selle') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Нет в наличии</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('add-product-selle') }}" class="flex items-center w-full p-2 text-base font-medium text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 ">Добавить новый</a>
-                            </li>
-                        </ul>
+                        <div class="rounded-2xl bg-white/5">
+                            <button type="button"
+                                class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-slate-100 transition hover:bg-white/10"
+                                aria-controls="dropdown-sales" data-collapse-toggle="dropdown-sales">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd"
+                                        d="M5 3a1 1 0 0 0 0 2h.687L7.82 15.24A3 3 0 1 0 11.83 17h2.34A3 3 0 1 0 17 15H9.813l-.208-1h8.145a1 1 0 0 0 .979-.796l1.25-6A1 1 0 0 0 19 6h-2.268A2 2 0 0 1 15 9a2 2 0 1 1-4 0 2 2 0 0 1-1.732-3h-1.33L7.48 3.796A1 1 0 0 0 6.5 3H5Z"
+                                        clip-rule="evenodd" />
+                                    <path fill-rule="evenodd"
+                                        d="M14 5a1 1 0 1 0-2 0v1h-1a1 1 0 1 0 0 2h1v1a1 1 0 1 0 2 0V8h1a1 1 0 1 0 0-2h-1V5Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <span class="flex-1">Товары</span>
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <ul id="dropdown-sales" class="hidden space-y-1 px-4 py-3 text-xs text-slate-200">
+                                <li>
+                                    <a href="{{ route('all-products-seller') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'all-products-seller'),
+                                        'hover:bg-white/10' => !request()->routeIs('all-products-seller'),
+                                    ])>
+                                        Все товары
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('peending-products-selle') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'peending-products-selle'),
+                                        'hover:bg-white/10' => !request()->routeIs('peending-products-selle'),
+                                    ])>
+                                        В ожидании
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('products-not-stock-selle') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs(
+                                            'products-not-stock-selle'),
+                                        'hover:bg-white/10' => !request()->routeIs('products-not-stock-selle'),
+                                    ])>
+                                        Нет в наличии
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('add-product-selle') }}" @class([
+                                        'flex items-center rounded-xl px-3 py-2 transition',
+                                        'bg-white text-slate-900 shadow' => request()->routeIs('add-product-selle'),
+                                        'hover:bg-white/10' => !request()->routeIs('add-product-selle'),
+                                    ])>
+                                        Добавить новый
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li>
-                        <a href="{{ route('seller.settings') }}" class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-
-                            <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-
-                                <path d="M10.83 5a3.001 3.001 0 0 0-5.66 0H4a1 1 0 1 0 0 2h1.17a3.001 3.001 0 0 0 5.66 0H20a1 1 0 1 0 0-2h-9.17ZM4 11h9.17a3.001 3.001 0 0 1 5.66 0H20a1 1 0 1 1 0 2h-1.17a3.001 3.001 0 0 1-5.66 0H4a1 1 0 1 1 0-2Zm1.17 6H4a1 1 0 1 0 0 2h1.17a3.001 3.001 0 0 0 5.66 0H20a1 1 0 1 0 0-2h-9.17a3.001 3.001 0 0 0-5.66 0Z" />
+                        <a href="{{ route('seller.settings') }}" @class([
+                            'flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200',
+                            'bg-white text-slate-900 shadow-lg' => request()->routeIs(
+                                'seller.settings'),
+                            'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs(
+                                'seller.settings'),
+                        ])>
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M10.83 5a3.001 3.001 0 0 0-5.66 0H4a1 1 0 1 0 0 2h1.17a3.001 3.001 0 0 0 5.66 0H20a1 1 0 1 0 0-2h-9.17ZM4 11h9.17a3.001 3.001 0 0 1 5.66 0H20a1 1 0 1 1 0 2h-1.17a3.001 3.001 0 0 1-5.66 0H4a1 1 0 1 1 0-2Zm1.17 6H4a1 1 0 1 0 0 2h1.17a3.001 3.001 0 0 0 5.66 0H20a1 1 0 1 0 0-2h-9.17a3.001 3.001 0 0 0-5.66 0Z" />
                             </svg>
-
-
-                            <span class="flex-1 ml-3 whitespace-nowrap">Настройки</span>
+                            <span>Настройки</span>
                         </a>
                     </li>
 
                     @livewire('seller.moy-sklad-togle')
-
                 </ul>
             </div>
         </aside>
@@ -211,4 +368,5 @@
     @yield('scripts')
     @include('global.scripts')
 </body>
+
 </html>

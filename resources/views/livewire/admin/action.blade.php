@@ -1,53 +1,55 @@
-    <div class="flex flex-col gap-4 lg:flex-row">
-        <div class="w-full">
-            <label for="action" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Выберите действия</label>
-            <select id="action" name="action" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option value="">Выберите действия</option>
-                <option value="delete">Удалить выбранные</option>
-                @if(Auth::user()->role == 'admin')
-                <option value="activate">Активироват выбранные</option>
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    <div class="space-y-2">
+        <label for="action" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Массовое действие</label>
+        <select id="action" name="action" class="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-700 focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">Выберите действие</option>
+            <option value="delete">Удалить выбранные</option>
+            @if(Auth::user()->role == 'admin')
+                <option value="activate">Активировать выбранные</option>
                 <option value="deactivate">Деактивировать выбранные</option>
-                @endif
-
-            </select>
-        </div>
-        <div class="w-full">
-            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Категория</label>
-            <select wire:model.live="selectedCategory" id="category" name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option value="">Выберите категория</option>
-                @foreach ($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-
-
-
-                @endforeach
-            </select>
-        </div>
-        <div class="w-full">
-            <label for="subcategory" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Под категория</label>
-            <select id="subcategory" name="subcategory" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option value="">Выберите под категория</option>
-                @if($subcategories)
-                @foreach ($subcategories as $subcategory)
-                <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
-                @endforeach
-                @endif
-            </select>
-        </div>
-        <div class="w-full">
-            <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Статус товар</label>
-            <select id="status" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                <option value="">Выберите статус товара</option>
-                <option value="1">Активные</option>
-                <option value="0">Не активные</option>
-            </select>
-        </div>
-        <div class="w-full">
-            <label for="search" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Искать товар</label>
-            <input id="search" name="search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-        </div>
-
-        <div class="flex items-end w-full">
-            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 w-full">Обновить</button>
-        </div>
+            @endif
+        </select>
     </div>
+
+    <div class="space-y-2">
+        <label for="category" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Категория</label>
+        <select wire:model.live="selectedCategory" id="category" name="category" class="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-700 focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">Все категории</option>
+            @foreach ($categories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="space-y-2">
+        <label for="subcategory" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Подкатегория</label>
+        <select id="subcategory" name="subcategory" class="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-700 focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">Все подкатегории</option>
+            @if($subcategories)
+                @foreach ($subcategories as $subcategory)
+                    <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                @endforeach
+            @endif
+        </select>
+    </div>
+
+    <div class="space-y-2">
+        <label for="status" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Статус</label>
+        <select id="status" name="status" class="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-700 focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">Любой статус</option>
+            <option value="1">Активные</option>
+            <option value="0">Неактивные</option>
+        </select>
+    </div>
+
+    <div class="space-y-2">
+        <label for="search" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Поиск</label>
+        <input id="search" name="search" placeholder="Название или код..." class="w-full rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-3 text-sm font-medium text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:ring-indigo-500">
+    </div>
+
+    <div class="flex items-end">
+        <button type="submit" class="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-500 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-indigo-200 transition hover:shadow-indigo-300">
+            Применить
+        </button>
+    </div>
+</div>

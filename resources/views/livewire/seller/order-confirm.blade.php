@@ -1,14 +1,20 @@
-<div>
+<div class="flex items-center gap-2">
     @if($suborder->status == 'Ожидание')
-    <div class="flex justify-end gap-2">
-        <button wire:click="confirm({{ $suborder->id }})" wire:loading.class="hidden" type="button" class="text-blue-600 hover:underline">Подтвердить</button>
-        <button wire:click="cancel({{ $suborder->id }})" wire:loading.class="hidden" type="button" class="text-red-600 hover:underline">Отменить</button>
-    </div>
+        <button
+            wire:click="confirm({{ $suborder->id }})"
+            type="button"
+            class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-200 transition hover:bg-emerald-500 hover:text-white">
+            Подтвердить
+        </button>
+        <button
+            wire:click="cancel({{ $suborder->id }})"
+            type="button"
+            class="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 ring-1 ring-rose-200 transition hover:bg-rose-500 hover:text-white">
+            Отменить
+        </button>
     @else
-    <div class="flex justify-end gap-2">
-        <p class="font-bold text-blue-600 uppercase hover:underline">{{ $suborder->status }}</p>
-
-    </div>
+        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500">
+            {{ $suborder->status }}
+        </span>
     @endif
-
 </div>

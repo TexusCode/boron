@@ -18,9 +18,9 @@ class CouponesController extends Controller
     public function addcoupones(Request $request)
     {
         $validatedData = $request->validate([
-            'code' => 'required|string|max:255',
+            'code' => 'nullable|string|max:255',
             'percent' => 'required|numeric|min:0|max:100',
-            'scope' => 'required|in:all,category',
+            'scope' => 'nullable|in:all,category',
             'category_id' => 'required_if:scope,category|exists:categories,id',
             'auto_apply' => 'nullable|boolean',
         ]);
