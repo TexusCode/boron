@@ -3,7 +3,9 @@
 
         <div class="swiper-wrapper">
             @foreach ($sliders as $slider)
-            <div class="w-full h-full bg-black swiper-slide"><img src="{{ asset('storage/'.$slider->image) }}" class="object-cover object-center w-full h-36 lg:h-80"></div>
+            <div class="w-full h-full bg-black swiper-slide">
+                <img src="{{ asset('storage/'.$slider->image) }}" class="object-contain w-full h-40 sm:h-56 lg:h-80">
+            </div>
             @endforeach
         </div>
         <div class="hidden text-white swiper-button-prev hover:text-white/80 lg:block"></div>
