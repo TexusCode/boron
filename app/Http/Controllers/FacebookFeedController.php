@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class FacebookFeedController extends Controller
 {
@@ -53,6 +53,6 @@ class FacebookFeedController extends Controller
         File::cleanDirectory($folderPath2);
 
         Product::truncate();
+        return back()->with('success', 'Успешно удалено все товары!');
     }
-
 }

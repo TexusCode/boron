@@ -24,6 +24,7 @@ class User extends Authenticatable
         'role',
         'status',
         'code',
+        'sms_notifications',
     ];
 
     /**
@@ -33,6 +34,10 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'remember_token',
+    ];
+
+    protected $casts = [
+        'sms_notifications' => 'boolean',
     ];
 
     public function favorites()

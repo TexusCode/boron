@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Coupone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CouponesController extends Controller
 {
@@ -17,20 +18,28 @@ class CouponesController extends Controller
     }
     public function addcoupones(Request $request)
     {
+        $request->merge([
+            'scope' => $request->input('scope', 'all'),
+        ]);
+
         $validatedData = $request->validate([
             'code' => 'nullable|string|max:255',
             'percent' => 'required|numeric|min:0|max:100',
-            'scope' => 'nullable|in:all,category',
-            'category_id' => 'required_if:scope,category|exists:categories,id',
+            'scope' => 'in:all,category',
+            'category_id' => 'nullable|required_if:scope,category|exists:categories,id',
             'auto_apply' => 'nullable|boolean',
         ]);
 
+        $scope = $validatedData['scope'] ?? 'all';
+
+        $code = $validatedData['code'] ?? Str::upper(Str::random(8));
+
         Coupone::create([
-            'code' => $validatedData['code'],
+            'code' => $code,
             'percent' => $validatedData['percent'],
             'status' => true,
-            'scope' => $validatedData['scope'],
-            'category_id' => $validatedData['scope'] === 'category' ? $validatedData['category_id'] : null,
+            'scope' => $scope,
+            'category_id' => $scope === 'category' ? ($validatedData['category_id'] ?? null) : null,
             'auto_apply' => $request->boolean('auto_apply', true),
         ]);
 

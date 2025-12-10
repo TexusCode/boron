@@ -72,6 +72,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/sms-page', [PagesController::class, 'smspage'])->name('sms-page');
     Route::post('/onesms', [PagesController::class, 'onesms'])->name('onesms');
     Route::post('/sms-many', [PagesController::class, 'smsmany'])->name('sms-many');
+    Route::post('/sms-clients', [PagesController::class, 'storeSmsClient'])->name('sms-clients.store');
+    Route::patch('/sms-clients/{user}/toggle', [PagesController::class, 'toggleSmsClient'])->name('sms-clients.toggle');
     Route::get('/account', [PagesController::class, 'account'])->name('admin.account');
     Route::post('/account', [PagesController::class, 'updateAccount'])->name('admin.account.update');
     //Coupones
