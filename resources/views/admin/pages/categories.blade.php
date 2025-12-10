@@ -22,8 +22,36 @@
         </div>
     </header>
 
+    @if($category)
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Редактирование</p>
+            <h2 class="text-xl font-semibold text-gray-900">Изменить категорию «{{ $category->name }}»</h2>
+            <form action="{{ route('add-category', $category->id) }}" method="POST" enctype="multipart/form-data" class="mt-4 grid gap-4 md:grid-cols-2">
+                @csrf
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Название</label>
+                    <input type="text" name="name" value="{{ $category->name }}" required
+                        class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Изображение</label>
+                    <input type="file" name="photo"
+                        class="mt-2 w-full rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-white">
+                </div>
+                <div class="md:col-span-2 flex justify-end gap-3">
+                    <a href="{{ route('categories') }}" class="rounded-2xl border border-gray-200 px-5 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+                        Отмена
+                    </a>
+                    <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">
+                        Сохранить изменения
+                    </button>
+                </div>
+            </form>
+        </div>
+    @endif
+
     <div>
-            <div class="rounded-3xl bg-white p-6 shadow-sm">
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Список</p>
