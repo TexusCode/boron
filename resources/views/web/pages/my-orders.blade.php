@@ -89,6 +89,13 @@
                     </div>
                     <div>
                         @foreach ($order->suborders as $suborder)
+                        @php
+                        $product = $suborder->product;
+                        $imageUrl = $product && $product->miniature
+                            ? url('storage/app/public/' . $product->miniature)
+                            : 'https://via.placeholder.com/160x160?text=No+Image';
+                        $productName = $product->name ?? 'Товар недоступен';
+                        @endphp
                         <div class="relative overflow-x-auto border-b border-gray-200 dark:border-gray-800">
                             <table class="w-full text-base text-left text-gray-900 dark:text-white md:table-fixed">
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
@@ -96,10 +103,10 @@
                                         <td class="py-4 w-96 min-w-56 whitespace-nowrap">
                                             <a href="#" class="flex items-center gap-4 font-medium hover:underline">
                                                 <div class="w-10 h-10 aspect-square shrink-0">
-                                                    <img class="w-full h-full dark:hidden" src="{{ 'http://boron.tj/storage/app/public/'.$suborder->product->miniature }}" alt="imac image" />
+                                                    <img class="w-full h-full dark:hidden" src="{{ $imageUrl }}" alt="product image" />
 
                                                 </div>
-                                                {{ $suborder->product->name }}
+                                                {{ $productName }}
 
 
                                             </a>

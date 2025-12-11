@@ -363,6 +363,16 @@ class PagesController extends Controller
         return view('web.pages.profile');
     }
 
+    public function policy()
+    {
+        return view('web.pages.policy');
+    }
+
+    public function support()
+    {
+        return view('web.pages.support');
+    }
+
     public function verification()
     {
         return view('verification');

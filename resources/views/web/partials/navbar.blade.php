@@ -113,11 +113,11 @@
                                     </a>
                                 </li> --}}
                                     <li>
-                                        <a href="#" title="" class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
+                                        <a href="{{ route('policy') }}" title="Политика использования" class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
                                             <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H7a1 1 0 0 1-1-1v-7c0-.6.4-1 1-1Z" />
                                             </svg>
-                                            Политика исползование
+                                            Политика использования
                                         </a>
                                     </li>
                                     {{-- <li>
@@ -132,7 +132,7 @@
 
                                 <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
                                     <li>
-                                        <a href="#" title="" class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
+                                        <a href="{{ route('support') }}" title="Техническая поддержка" class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
                                             <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.5 10a2.5 2.5 0 1 1 5 .2 2.4 2.4 0 0 1-2.5 2.4V14m0 3h0m9-5a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                             </svg>
