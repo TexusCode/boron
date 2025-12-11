@@ -178,7 +178,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::check() && Auth::user()->role == 'admin')
                                     <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
                                         <li>
                                             <a href="{{ route('admin-dashboard') }}" title="Техническая поддержка"
@@ -195,7 +195,7 @@
                                         </li>
                                     </ul>
                                 @endif
-                                @if (Auth::user()->role == 'seller')
+                                @if (Auth::check() && Auth::user()->role == 'seller')
                                     <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
                                         <li>
                                             <a href="{{ route('seller-dashboard') }}" title="Техническая поддержка"
