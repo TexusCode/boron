@@ -50,7 +50,8 @@ class PagesController extends Controller
             return back()->with('error', 'Пожалуйста, укажите номер телефона и сообщение');
         }
 
-        SendSmsJob::dispatch($phone, $message);
+        $smsController = new SmsController();
+        $smsController->sendSms($phone, $message);
 
         return back()->with('success', 'Сообщение успешно отправлено');
     }
@@ -115,7 +116,7 @@ class PagesController extends Controller
 
     public function toggleSmsClient(User $user)
     {
-        $user->sms_notifications = ! $user->sms_notifications;
+        $user->sms_notifications = !$user->sms_notifications;
         $user->save();
 
         return back()->with('success', 'Настройка SMS обновлена.');
