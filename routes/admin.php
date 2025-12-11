@@ -35,6 +35,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/show-seller/{id}', [SellerController::class, 'showseller'])->name('show-seller');
     Route::post('/activate-seller/{id}', [SellerController::class, 'activateseller'])->name('activate-seller');
     Route::post('/verify-seller/{id}', [SellerController::class, 'verifyseller'])->name('verify-seller');
+    Route::delete('/delete-seller/{id}', [SellerController::class, 'deleteseller'])->name('delete-seller');
     // Products
     Route::get('/products', [ProductController::class, 'products'])->name('all-products');
     Route::get('/peending-products', [ProductController::class, 'peendingproducts'])->name('peending-products');

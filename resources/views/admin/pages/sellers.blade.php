@@ -152,6 +152,14 @@
                                         class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-600 hover:text-white">
                                         Подробнее
                                     </a>
+                                    <form action="{{ route('delete-seller', $seller->id) }}" method="POST" onsubmit="return confirm('Удалить продавца {{ $seller->store_name }}? Это действие необратимо.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-600 hover:text-white">
+                                            Удалить
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

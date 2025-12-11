@@ -115,6 +115,30 @@ class SellerController extends Controller
         return redirect()->route('sellers')->with('success', 'Регистрация прошла успешно');
     }
 
+    public function deleteseller($id)
+    {
+        $seller = Seller::findOrFail($id);
+
+        // Деактивируем привязанные товары, чтобы скрыть их из каталога
+        Product::where('seller_id', $seller->id)->update([
+            'status' => false,
+        ]);
+
+        // Сбрасываем роль пользователя
+        $user = User::find($seller->user_id);
+        if ($user) {
+            $user->isseller = false;
+            if ($user->role === 'seller') {
+                $user->role = 'customer';
+            }
+            $user->save();
+        }
+
+        $seller->delete();
+
+        return back()->with('success', 'Продавец удалён');
+    }
+
     protected function sellerList(Request $request, string $activeTab = 'all')
     {
         $query = Seller::query();
