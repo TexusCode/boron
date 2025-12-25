@@ -5,6 +5,7 @@
     $statusBadge = [
         'Ожидание' => 'bg-amber-50 text-amber-700 ring-amber-200',
         'Подтверждено' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+        'Передан курьеру' => 'bg-sky-50 text-sky-700 ring-sky-200',
         'Отправлен' => 'bg-blue-50 text-blue-700 ring-blue-200',
         'Доставлен' => 'bg-indigo-50 text-indigo-700 ring-indigo-200',
         'Отменено' => 'bg-rose-50 text-rose-700 ring-rose-200',
@@ -101,6 +102,12 @@
                         <p class="mt-2 text-sm text-indigo-900">{{ $order->note }}</p>
                     </div>
                 @endif
+                @if ($order->status === 'Отменено' && $order->cancellation_reason)
+                    <div class="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                        <p class="text-xs uppercase text-rose-500">Причина отмены</p>
+                        <p class="mt-2 text-sm font-semibold text-rose-900">{{ $order->cancellation_reason }}</p>
+                    </div>
+                @endif
             </div>
 
             <div class="rounded-3xl bg-white p-0 shadow-sm">
@@ -169,9 +176,9 @@
                         <select name="deliver_boy_id"
                             class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-800 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Не назначен</option>
-                            @foreach ($delivers as $deliver)
-                                <option value="{{ $deliver->id }}" @selected($order->deliver_boy_id === $deliver->id)>
-                                    {{ $deliver->name }} — +992 {{ $deliver->phone }}
+                            @foreach ($couriers as $courier)
+                                <option value="{{ $courier->id }}" @selected($order->deliver_boy_id === $courier->id)>
+                                    {{ $courier->name }} — +992 {{ $courier->phone }}
                                 </option>
                             @endforeach
                         </select>

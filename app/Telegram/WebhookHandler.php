@@ -4,10 +4,10 @@ namespace App\Telegram;
 
 use App\Http\Controllers\SmsController;
 use App\Models\ChatStatus;
-use App\Models\Deliver;
 use App\Models\Order;
 use App\Models\OtherPhoto;
 use App\Models\Product;
+use App\Models\User;
 use DefStudio\Telegraph\Enums\ChatActions;
 use DefStudio\Telegraph\Keyboard\Button;
 use DefStudio\Telegraph\Keyboard\Keyboard;
@@ -58,7 +58,9 @@ class WebhookHandler extends \DefStudio\Telegraph\Handlers\WebhookHandler
         if ($chat_status->status === 'phone') {
             // Check if the user is a deliverer and if the phone number is valid
             $text = $this->message->text(); // Get the user's input for the phone number
-            $deliver = Deliver::where('phone', $text)->first();
+            $deliver = User::where('phone', $text)
+                ->whereIn('role', ['deliver', 'courier'])
+                ->first();
 
             if ($deliver) {
                 // Generate and send confirmation code

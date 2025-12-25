@@ -62,6 +62,12 @@ class AuthController extends Controller
                     return redirect()->route('admin-dashboard')->with('success', 'Добро пожаловать, администратор!');
                 } elseif ($user->role == 'seller') {
                     return redirect()->route('seller-dashboard')->with('success', 'Добро пожаловать, продавец!');
+                } elseif ($user->role == 'manager') {
+                    return redirect()->route('manager.dashboard')->with('success', 'Добро пожаловать, менеджер!');
+                } elseif (in_array($user->role, ['courier', 'deliver'], true)) {
+                    return redirect()->route('courier.orders')->with('success', 'Добро пожаловать, курьер!');
+                } elseif ($user->role == 'cashier') {
+                    return redirect()->route('cashier.dashboard')->with('success', 'Добро пожаловать, кассир!');
                 }
 
 

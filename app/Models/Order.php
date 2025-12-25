@@ -13,6 +13,7 @@ class Order extends Model
         'no',
         'user_id',
         'subtotal',
+        'cashier_id',
         'delivery_price',
         'coupone_code',
         'tax',
@@ -24,6 +25,8 @@ class Order extends Model
         'delivery_type',
         'note',
         'status',
+        'cancellation_reason',
+        'review_token',
         'deliver_boy_id',
     ];
 
@@ -31,13 +34,22 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function deliver()
+    public function cashier()
     {
-        return $this->belongsTo(Deliver::class, 'deliver_boy_id');
+        return $this->belongsTo(User::class, 'cashier_id');
+    }
+    public function courier()
+    {
+        return $this->belongsTo(User::class, 'deliver_boy_id');
     }
 
     public function suborders()
     {
         return $this->hasMany(SubOrder::class);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(OrderReview::class);
     }
 }

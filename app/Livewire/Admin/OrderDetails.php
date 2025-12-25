@@ -3,24 +3,24 @@
 namespace App\Livewire\Admin;
 
 use App\Http\Controllers\SmsController;
-use App\Models\ChatStatus;
-use App\Models\Deliver;
 use App\Models\Order;
 use App\Models\SubOrder;
-use App\Telegram\WebhookHandler;
+use App\Models\User;
 use Livewire\Component;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class OrderDetails extends Component
 {
     public $order;
-    public $delivers;
+    public $couriers;
     public $deliver;
     public $status;
 
     public function mount($order)
     {
         $this->order = Order::find($order);
-        $this->delivers = Deliver::all();
+        $this->couriers = User::whereIn('role', ['deliver', 'courier'])->get();
         $this->status = $this->order->status;
         $this->deliver = $this->order->deliver_boy_id;
     }
@@ -34,11 +34,22 @@ class OrderDetails extends Component
         $phone = $order->user->phone;
         if ($order->status == 'Подтверждено') {
             $message = "Заказ №$order->id был подтвержден продавцом. Спасибо за ваш выбор!";
+        } elseif ($order->status == 'Передан курьеру') {
+            $message = "Заказ №$order->id передан курьеру.";
         } elseif ($order->status == 'Отправлен') {
             $message = "Заказ №$order->id был отправлен. Пожалуйста, оставайтесь на связи для получения.";
         } elseif ($order->status == 'Доставлен') {
-            $message = "Заказ №$order->id был успешно доставлен. Мы надеемся, что вы довольны покупкой!";
-        } elseif ($order->status == 'Отменен') {
+            if (!$order->review_token) {
+                $order->review_token = Str::random(40);
+                $order->save();
+            }
+            $link = URL::temporarySignedRoute(
+                'order-review.show',
+                now()->addDays(7),
+                ['token' => $order->review_token]
+            );
+            $message = "Заказ №$order->id был успешно доставлен. Оставьте отзыв: $link";
+        } elseif ($order->status == 'Отменено') {
             $message = "Заказ №$order->id был отменен. Если у вас есть вопросы, пожалуйста, свяжитесь с нашей службой поддержки.";
         } else {
             $message = "Статус заказа №$order->id неизвестен. Пожалуйста, проверьте информацию.";
@@ -49,19 +60,24 @@ class OrderDetails extends Component
     }
     public function updatedDeliver()
     {
-        // dd($this->deliver);
         $order = $this->order;
         $order->deliver_boy_id = $this->deliver;
         $order->save();
 
-        $phone = $order->deliver->phone;
-        $message = "У вас новый заказ на доставку! Номер заказ $order->id";
-        $smsController = new SmsController();
-        $smsResponse = $smsController->sendSms($phone, $message);
+        $courier = User::whereIn('role', ['deliver', 'courier'])->find($this->deliver);
+        if (!$courier || !$courier->phone) {
+            return;
+        }
 
-        $telegram = new WebhookHandler();
-        $chat = ChatStatus::where('phone', $phone)->first();
-        $chatbot = $telegram->sendmess($order->id, $chat->id);
+        $message = "Новый заказ #{$order->id}\n"
+            . "Клиент: " . ($order->user->name ?? '—') . "\n"
+            . "Телефон: +992 " . ($order->user->phone ?? '—') . "\n"
+            . "Адрес: " . trim(($order->city ?? '') . ' ' . ($order->location ?? '')) . "\n"
+            . "Оплата: " . ($order->payment ?? '—') . "\n"
+            . "Сумма: " . number_format($order->total ?? 0, 2, '.', ' ') . " c";
+        $smsController = new SmsController();
+        $smsController->sendSms($courier->phone, $message);
+
     }
     public function confirm($id)
     {

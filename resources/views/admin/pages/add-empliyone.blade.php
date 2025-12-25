@@ -36,6 +36,8 @@
                 <option value="">Выберите роль</option>
                 <option value="admin" @selected(isset($employee) && $employee->role == 'admin')>Администратор</option>
                 <option value="manager" @selected(isset($employee) && $employee->role == 'manager')>Менеджер</option>
+                <option value="deliver" @selected(isset($employee) && $employee->role == 'deliver')>Доставщик</option>
+                <option value="cashier" @selected(isset($employee) && $employee->role == 'cashier')>Кассир</option>
                 <option value="staff" @selected(isset($employee) && $employee->role == 'staff')>Сотрудник</option>
             </select>
         </div>

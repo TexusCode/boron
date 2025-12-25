@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Deliver;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\SmsController;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -78,16 +81,18 @@ class OrderController extends Controller
 
     public function orderdetails($id)
     {
-        $order = Order::with(['user', 'suborders.product', 'deliver'])->findOrFail($id);
+        $order = Order::with(['user', 'suborders.product', 'courier'])->findOrFail($id);
 
         $totals = [
             'items' => $order->suborders->sum('count'),
             'discount' => $order->suborders->sum('discount'),
         ];
 
-        $delivers = Deliver::orderBy('name')->get();
+        $couriers = User::whereIn('role', ['deliver', 'courier'])
+            ->orderBy('name')
+            ->get();
 
-        return view('admin.pages.order-details', compact('order', 'totals', 'delivers'));
+        return view('admin.pages.order-details', compact('order', 'totals', 'couriers'));
     }
 
     public function updateStatus(Request $request, Order $order)
@@ -99,19 +104,89 @@ class OrderController extends Controller
         $order->status = $request->status;
         $order->save();
 
+        $this->notifyClientStatus($order);
+
         return back()->with('success', 'Статус заказа обновлён.');
     }
 
     public function assignDeliver(Request $request, Order $order)
     {
         $request->validate([
-            'deliver_boy_id' => 'nullable|exists:delivers,id',
+            'deliver_boy_id' => 'nullable|exists:users,id',
         ]);
 
-        $order->deliver_boy_id = $request->deliver_boy_id;
+        $courier = null;
+        if ($request->filled('deliver_boy_id')) {
+            $courier = User::whereIn('role', ['deliver', 'courier'])->find($request->deliver_boy_id);
+            if (!$courier) {
+                return back()->with('error', 'Выбранный сотрудник не является курьером.');
+            }
+        }
+
+        $previousCourierId = $order->deliver_boy_id;
+        $order->deliver_boy_id = $courier?->id;
+        if ($courier && !in_array($order->status, ['Доставлен', 'Отменено'], true)) {
+            $order->status = 'Передан курьеру';
+        }
         $order->save();
 
+        if ($courier && $courier->phone && $previousCourierId !== $courier->id) {
+            $order->loadMissing(['user', 'suborders.product']);
+            $sms = new SmsController();
+            $sms->sendSms($courier->phone, $this->buildCourierMessage($order));
+        }
+
         return back()->with('success', 'Информация о доставке обновлена.');
+    }
+
+    private function buildCourierMessage(Order $order): string
+    {
+        $lines = [
+            "Новый заказ #{$order->id}",
+            "Клиент: " . ($order->user->name ?? '—'),
+            "Телефон: +992 " . ($order->user->phone ?? '—'),
+            "Адрес: " . trim(($order->city ?? '') . ' ' . ($order->location ?? '')),
+            "Оплата: " . ($order->payment ?? '—'),
+            "Сумма: " . number_format($order->total ?? 0, 2, '.', ' ') . ' c',
+        ];
+
+        return implode(PHP_EOL, $lines);
+    }
+
+    private function notifyClientStatus(Order $order): void
+    {
+        $phone = $order->user->phone ?? null;
+        if (!$phone) {
+            return;
+        }
+
+        $message = match ($order->status) {
+            'Подтверждено' => "Ваш заказ №{$order->id} подтвержден.",
+            'Отправлен' => "Ваш заказ №{$order->id} отправлен.",
+            'Передан курьеру' => "Ваш заказ №{$order->id} передан курьеру.",
+            'Доставлен' => $this->buildDeliveredMessage($order),
+            'Отменено' => "Ваш заказ №{$order->id} отменен.",
+            default => "Статус заказа №{$order->id} обновлен: {$order->status}.",
+        };
+
+        $sms = new SmsController();
+        $sms->sendSms($phone, $message);
+    }
+
+    private function buildDeliveredMessage(Order $order): string
+    {
+        if (!$order->review_token) {
+            $order->review_token = Str::random(40);
+            $order->save();
+        }
+
+        $link = URL::temporarySignedRoute(
+            'order-review.show',
+            now()->addDays(7),
+            ['token' => $order->review_token]
+        );
+
+        return "Ваш заказ №{$order->id} успешно доставлен. Оставьте отзыв: {$link}";
     }
 
     public function destroy(Order $order)

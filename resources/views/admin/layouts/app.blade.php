@@ -288,26 +288,6 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('delivers') }}" @class([
-                                'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
-                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('delivers'),
-                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('delivers'),
-                            ])>
-                                <span @class([
-                                    'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
-                                    'bg-slate-900/5 text-slate-900' => request()->routeIs('delivers'),
-                                ])>
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3.375 6.75h13.5M3.375 12h13.5M3.375 17.25h13.5M17.25 12h3.375M17.25 17.25H21M7.5 21A2.25 2.25 0 0 1 5.25 18.75V6.75" />
-                                    </svg>
-                                </span>
-                                <span>Доставщики</span>
-                            </a>
-                        </li>
-
-                        <li>
                             <a href="{{ route('empliyones') }}" @class([
                                 'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
                                 'bg-white text-slate-900 shadow-lg' => request()->routeIs('empliyones'),
@@ -324,6 +304,26 @@
                                     </svg>
                                 </span>
                                 <span>Сотрудники</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.reviews') }}" @class([
+                                'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
+                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('admin.reviews'),
+                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('admin.reviews'),
+                            ])>
+                                <span @class([
+                                    'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
+                                    'bg-slate-900/5 text-slate-900' => request()->routeIs('admin.reviews'),
+                                ])>
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M7.5 8.25h9m-9 3.75h6M4.5 6.75h15A1.5 1.5 0 0 1 21 8.25v7.5A1.5 1.5 0 0 1 19.5 17.25h-9l-4.5 3v-3H4.5A1.5 1.5 0 0 1 3 15.75v-7.5A1.5 1.5 0 0 1 4.5 6.75z" />
+                                    </svg>
+                                </span>
+                                <span>Отзывы</span>
                             </a>
                         </li>
 

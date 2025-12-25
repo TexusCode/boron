@@ -93,6 +93,8 @@
                     <option value="">Выберите роль</option>
                     <option value="admin">Администратор</option>
                     <option value="manager">Менеджер</option>
+                    <option value="deliver">Доставщик</option>
+                    <option value="cashier">Кассир</option>
                     <option value="staff">Сотрудник</option>
                 </select>
             </div>

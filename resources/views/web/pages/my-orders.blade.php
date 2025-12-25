@@ -8,10 +8,13 @@
             </div>
 
             <div class="flow-root">
-                @if (Auth::user()->orders->isEmpty())
+                @php
+                    $orders = Auth::user()->orders->where('status', '!=', 'Доставлен');
+                @endphp
+                @if ($orders->isEmpty())
                 <p class="mt-4 text-gray-600">Заказы пока нет.</p>
                 @else
-                @foreach (Auth::user()->orders as $order)
+                @foreach ($orders as $order)
                 <div class="mb-6 divide-y divide-gray-200">
                     <div class="flex flex-wrap items-center py-4 gap-y-4">
                         <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">

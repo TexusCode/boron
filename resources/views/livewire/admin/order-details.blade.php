@@ -84,10 +84,10 @@
                 <div class="grid grid-cols-1 gap-4">
                     @if($order->delivery_type == 'Доставка курьером')
                     <div>
-                        <label class="block mb-2 font-semibold text-gray-700" for="deliveryBoy">Выбор доставщика</label>
+                        <label class="block mb-2 font-semibold text-gray-700" for="deliveryBoy">Выбор курьера</label>
                         <select id="deliveryBoy" wire:model.live="deliver" class="w-full p-2 border-gray-300 rounded-lg">
-                            @foreach ($delivers as $deliver)
-                            <option value="{{ $deliver->id }}">{{ $deliver->name }}</option>
+                            @foreach ($couriers as $courier)
+                            <option value="{{ $courier->id }}">{{ $courier->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -97,9 +97,10 @@
                         <select id="status" wire:model.live="status" class="w-full p-2 border-gray-300 rounded-lg">
                             <option value="Ожидание">Ожидание</option>
                             <option value="Подтверждено">Подтверждено</option>
+                            <option value="Передан курьеру">Передан курьеру</option>
                             <option value="Отправлен">Отправлен</option>
                             <option value="Доставлен">Доставлен</option>
-                            <option value="Отменен">Отменен</option>
+                            <option value="Отменено">Отменено</option>
                         </select>
                     </div>
                 </div>

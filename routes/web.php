@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Seller\MoyskladController;
 use App\Http\Controllers\Web\PagesController;
+use App\Http\Controllers\Web\ReviewController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::get('/filters', [PagesController::class, 'filters'])->name('filters');
 Route::get('/search', [PagesController::class, 'search'])->name('search');
 Route::get('/policy', [PagesController::class, 'policy'])->name('policy');
 Route::get('/support', [PagesController::class, 'support'])->name('support');
+
+Route::get('/order-review/{token}', [ReviewController::class, 'show'])->name('order-review.show')->middleware('signed');
+Route::post('/order-review/{token}', [ReviewController::class, 'store'])->name('order-review.store')->middleware('signed');
 
 Route::get('details/{id}', [PagesController::class, 'details'])->name('details');
 

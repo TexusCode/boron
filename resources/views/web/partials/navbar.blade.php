@@ -195,6 +195,40 @@
                                         </li>
                                     </ul>
                                 @endif
+                                @if (Auth::check() && Auth::user()->role == 'manager')
+                                    <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
+                                        <li>
+                                            <a href="{{ route('manager.dashboard') }}" title="Панель менеджера"
+                                                class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
+                                                <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 6h16M4 12h16M4 18h16" />
+                                                </svg>
+                                                Войдите в панель менеджера
+                                            </a>
+                                        </li>
+                                    </ul>
+                                @endif
+                                @if (Auth::check() && in_array(Auth::user()->role, ['courier', 'deliver']))
+                                    <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
+                                        <li>
+                                            <a href="{{ route('courier.orders') }}" title="Панель курьера"
+                                                class="flex items-center gap-2 px-3 py-2 text-gray-900 rounded-md group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600">
+                                                <svg class="w-4 h-4 text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2"
+                                                        d="M3 13h2l2 4h9l2-4h3M5 13l1.5-4h8L16 13M7 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+                                                </svg>
+                                                Войдите в панель курьера
+                                            </a>
+                                        </li>
+                                    </ul>
+                                @endif
                                 @if (Auth::check() && Auth::user()->role == 'seller')
                                     <ul class="text-sm font-medium text-gray-900 text-start dark:text-white">
                                         <li>
@@ -207,7 +241,7 @@
                                                         stroke-linejoin="round" stroke-width="2"
                                                         d="M9.5 10a2.5 2.5 0 1 1 5 .2 2.4 2.4 0 0 1-2.5 2.4V14m0 3h0m9-5a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                 </svg>
-                                                Войдите в админку
+                                                Войдите в панель продавца
                                             </a>
                                         </li>
                                     </ul>
@@ -295,6 +329,41 @@
                             <a href="{{ route('become-a-seller') }}"
                                 class="hover:text-primary-700 dark:hover:text-primary-500">Стать продавцом</a>
                         </li>
+                        @if (Auth::check() && Auth::user()->role == 'admin')
+                            <li>
+                                <a href="{{ route('admin-dashboard') }}" title="Техническая поддержка"
+                                    class="hover:text-primary-700 dark:hover:text-primary-500">
+
+                                    Войдите в админку
+                                </a>
+                            </li>
+                        @endif
+                        @if (Auth::check() && Auth::user()->role == 'manager')
+                            <li>
+                                <a href="{{ route('manager.dashboard') }}" title="Панель менеджера"
+                                    class="hover:text-primary-700 dark:hover:text-primary-500">
+
+                                    Войдите в панель менеджера
+                                </a>
+                            </li>
+                        @endif
+                        @if (Auth::check() && in_array(Auth::user()->role, ['courier', 'deliver']))
+                            <li>
+                                <a href="{{ route('courier.orders') }}" title="Панель курьера"
+                                    class="hover:text-primary-700 dark:hover:text-primary-500">
+
+                                    Войдите в панель курьера
+                                </a>
+                            </li>
+                        @endif
+                        @if (Auth::check() && Auth::user()->role == 'seller')
+                            <li>
+                                <a href="{{ route('seller-dashboard') }}" title="Техническая поддержка"
+                                    class="hover:text-primary-700 dark:hover:text-primary-500">
+                                    Войдите в панель продавца
+                                </a>
+                            </li>
+                        @endif
 
                     </ul>
                 </div>
