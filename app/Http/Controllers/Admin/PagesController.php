@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SmsController;
 use App\Jobs\SendSmsJob;
+use App\Models\SmsTemplate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,20 +13,55 @@ use Illuminate\Support\Facades\Hash;
 
 class PagesController extends Controller
 {
-    public function smspage()
+    public function smspage(Request $request)
     {
-        $clients = User::orderByDesc('created_at')->paginate(25);
+        $search = trim((string) $request->get('q', ''));
+        $sort = (string) $request->get('sort', 'new');
+
+        $clientsQuery = User::query();
+        if ($search !== '') {
+            $clientsQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+            });
+        }
+
+        switch ($sort) {
+            case 'name':
+                $clientsQuery->orderBy('name');
+                break;
+            case 'phone':
+                $clientsQuery->orderBy('phone');
+                break;
+            case 'old':
+                $clientsQuery->orderBy('created_at');
+                break;
+            default:
+                $clientsQuery->orderByDesc('created_at');
+        }
+
+        $clients = $clientsQuery->paginate(25)->appends(['q' => $search, 'sort' => $sort]);
         $stats = [
             'total' => User::count(),
             'enabled' => User::where('sms_notifications', true)->count(),
         ];
+        $templates = SmsTemplate::orderBy('title')->get();
 
-        return view('admin.pages.sms-page', compact('clients', 'stats'));
+        return view('admin.pages.sms-page', compact('clients', 'stats', 'templates', 'search', 'sort'));
     }
     public function smsmany(Request $request)
     {
         ini_set('max_execution_time', 5000);
-        $message = $request->simpleMessage;
+        $data = $request->validate([
+            'simpleMessage' => ['nullable', 'string'],
+            'template_id' => ['nullable', 'integer', 'exists:sms_templates,id'],
+        ]);
+
+        $message = $data['simpleMessage'] ?? null;
+        if (!empty($data['template_id'])) {
+            $template = SmsTemplate::find($data['template_id']);
+            $message = $template?->body ?? $message;
+        }
 
         if (!$message) {
             return back()->with('error', 'Сообщение не может быть пустым');
@@ -42,8 +78,18 @@ class PagesController extends Controller
 
     public function onesms(Request $request)
     {
-        $phone = $request->phone;
-        $message = $request->message;
+        $data = $request->validate([
+            'phone' => ['required', 'string', 'max:32'],
+            'message' => ['nullable', 'string'],
+            'template_id' => ['nullable', 'integer', 'exists:sms_templates,id'],
+        ]);
+
+        $phone = $data['phone'];
+        $message = $data['message'] ?? null;
+        if (!empty($data['template_id'])) {
+            $template = SmsTemplate::find($data['template_id']);
+            $message = $template?->body ?? $message;
+        }
 
         // Проверка, что номер и сообщение заполнены
         if (!$phone || !$message) {

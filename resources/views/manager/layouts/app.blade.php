@@ -246,26 +246,38 @@
                                 </svg>
                             </button>
                             <ul id="manager-cashier-menu" class="hidden space-y-1 px-4 py-3 text-xs text-slate-200">
-                                <li><a href="{{ route('manager.cashier.orders.create') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.cashier.orders.create'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.cashier.orders.create'),
-                                ])>Создать заказ</a></li>
-                                <li><a href="{{ route('manager.cashier.orders.index') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.cashier.orders.index') || request()->routeIs('manager.cashier.orders.show'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.cashier.orders.index') && !request()->routeIs('manager.cashier.orders.show'),
-                                ])>Заказы кассы</a></li>
-                                <li><a href="{{ route('manager.cashier.clients.index') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.cashier.clients.index'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.cashier.clients.index'),
-                                ])>Клиенты</a></li>
-                                <li><a href="{{ route('manager.cashier.sms-templates.index') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.cashier.sms-templates.index'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.cashier.sms-templates.index'),
-                                ])>SMS шаблоны</a></li>
+                                <li><a href="{{ route('manager.cashier.orders.create') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.cashier.orders.create'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.cashier.orders.create'),
+                                        ])>Создать заказ</a></li>
+                                <li><a href="{{ route('manager.cashier.orders.index') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' =>
+                                                request()->routeIs('manager.cashier.orders.index') ||
+                                                request()->routeIs('manager.cashier.orders.show'),
+                                            'hover:bg-white/10' =>
+                                                !request()->routeIs('manager.cashier.orders.index') &&
+                                                !request()->routeIs('manager.cashier.orders.show'),
+                                        ])>Заказы кассы</a></li>
+                                <li><a href="{{ route('manager.cashier.clients.index') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.cashier.clients.index'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.cashier.clients.index'),
+                                        ])>Клиенты</a></li>
+                                <li><a href="{{ route('manager.cashier.sms-templates.index') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.cashier.sms-templates.index'),
+                                            'hover:bg-white/10' => !request()->routeIs(
+                                                'manager.cashier.sms-templates.index'),
+                                        ])>SMS шаблоны</a></li>
                             </ul>
                         </li>
                     </ul>

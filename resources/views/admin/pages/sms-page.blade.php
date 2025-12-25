@@ -31,6 +31,25 @@
                     class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">+ Клиент</button>
             </div>
         </div>
+        <form method="GET" action="{{ route('sms-page') }}" class="mt-5 flex flex-wrap items-end gap-3 text-sm">
+            <div>
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-400">Поиск</label>
+                <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Имя или телефон"
+                    class="mt-2 w-56 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="text-xs font-semibold uppercase tracking-wide text-gray-400">Сортировка</label>
+                <select name="sort"
+                    class="mt-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="new" @selected(($sort ?? 'new') === 'new')>Сначала новые</option>
+                    <option value="old" @selected(($sort ?? '') === 'old')>Сначала старые</option>
+                    <option value="name" @selected(($sort ?? '') === 'name')>По имени</option>
+                    <option value="phone" @selected(($sort ?? '') === 'phone')>По телефону</option>
+                </select>
+            </div>
+            <button type="submit"
+                class="mt-6 rounded-2xl border border-gray-200 px-4 py-2 text-xs font-semibold uppercase text-gray-600 hover:bg-gray-50">Показать</button>
+        </form>
     </div>
 
     <div class="rounded-3xl border border-gray-100 bg-white shadow-sm">
@@ -41,6 +60,7 @@
                         <th class="px-5 py-3 text-left">Клиент</th>
                         <th class="px-5 py-3 text-left">Телефон</th>
                         <th class="px-5 py-3 text-left">SMS</th>
+                        <th class="px-5 py-3 text-left">Действия</th>
                         <th class="px-5 py-3 text-right">Дата</th>
                     </tr>
                 </thead>
@@ -60,6 +80,13 @@
                                         {{ $client->sms_notifications ? 'Включено' : 'Выключено' }}
                                     </button>
                                 </form>
+                            </td>
+                            <td class="px-5 py-4">
+                                <button type="button" data-modal-target="row-sms-modal" data-modal-toggle="row-sms-modal"
+                                    data-phone="{{ $client->phone }}"
+                                    class="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold uppercase text-gray-600 hover:bg-gray-50">
+                                    SMS
+                                </button>
                             </td>
                             <td class="px-5 py-4 text-right text-xs text-gray-500">{{ optional($client->created_at)->format('d.m.Y') }}</td>
                         </tr>
@@ -90,8 +117,18 @@
                     class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <div>
+                <label class="text-sm font-semibold text-gray-700">Шаблон</label>
+                <select name="template_id"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Без шаблона</option>
+                    @foreach ($templates as $template)
+                        <option value="{{ $template->id }}">{{ $template->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="text-sm font-semibold text-gray-700">Сообщение</label>
-                <textarea name="message" rows="4" required
+                <textarea name="message" rows="4"
                     class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                     placeholder="Введите текст..."></textarea>
             </div>
@@ -117,8 +154,18 @@
         <form action="{{ route('sms-many') }}" method="POST" class="mt-4 space-y-4">
             @csrf
             <div>
+                <label class="text-sm font-semibold text-gray-700">Шаблон</label>
+                <select name="template_id"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Без шаблона</option>
+                    @foreach ($templates as $template)
+                        <option value="{{ $template->id }}">{{ $template->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="text-sm font-semibold text-gray-700">Сообщение</label>
-                <textarea name="simpleMessage" rows="5" required
+                <textarea name="simpleMessage" rows="5"
                     class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                     placeholder="Введите текст..."></textarea>
             </div>
@@ -166,4 +213,61 @@
         </form>
     </div>
 </div>
+
+<div id="row-sms-modal" tabindex="-1" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">SMS клиенту</p>
+                <h3 class="text-lg font-semibold text-gray-900">Быстрое сообщение</h3>
+            </div>
+            <button type="button" data-modal-hide="row-sms-modal" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <form action="{{ route('onesms') }}" method="POST" class="mt-4 space-y-4">
+            @csrf
+            <div>
+                <label class="text-sm font-semibold text-gray-700">Номер телефона</label>
+                <input type="tel" name="phone" id="row-sms-phone" required placeholder="+992901234567"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-gray-700">Шаблон</label>
+                <select name="template_id"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Без шаблона</option>
+                    @foreach ($templates as $template)
+                        <option value="{{ $template->id }}">{{ $template->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-gray-700">Сообщение</label>
+                <textarea name="message" rows="4"
+                    class="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="Введите текст..."></textarea>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" data-modal-hide="row-sms-modal"
+                    class="rounded-2xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">Отмена</button>
+                <button type="submit"
+                    class="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">Отправить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section('scripts')
+    @parent
+    <script>
+        document.querySelectorAll('[data-modal-target="row-sms-modal"]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const phone = button.getAttribute('data-phone') || '';
+                const input = document.getElementById('row-sms-phone');
+                if (input) {
+                    input.value = phone ? `+992 ${phone}` : '';
+                }
+            });
+        });
+    </script>
+@endsection
 @endsection
