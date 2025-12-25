@@ -1,4 +1,6 @@
-@extends('cashier.layouts.app')
+@extends($layout ?? 'cashier.layouts.app')
+
+@php($routePrefix = $routePrefix ?? 'cashier.')
 
 @section('content')
 <section class="space-y-6">
@@ -15,7 +17,7 @@
                 <h1 class="mt-2 text-2xl font-semibold text-slate-900">Детали заказа</h1>
                 <p class="mt-2 text-sm text-slate-500">Управляйте статусом и отправкой SMS.</p>
             </div>
-            <a href="{{ route('cashier.orders.index') }}"
+            <a href="{{ route($routePrefix . 'orders.index') }}"
                 class="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold uppercase text-slate-600">Назад</a>
         </div>
     </header>
@@ -51,7 +53,7 @@
 
             <div class="rounded-3xl bg-white p-6 shadow-sm">
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Статус заказа</p>
-                <form method="POST" action="{{ route('cashier.orders.status', $order) }}" class="mt-4 space-y-3">
+                <form method="POST" action="{{ route($routePrefix . 'orders.status', $order) }}" class="mt-4 space-y-3">
                     @csrf
                     <select name="status" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm">
                         @foreach (['Ожидание','Подтверждено','Передан курьеру','Отправлен','Доставлен','Отменено'] as $status)
@@ -65,7 +67,7 @@
 
             <div class="rounded-3xl bg-white p-6 shadow-sm">
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-400">SMS клиенту</p>
-                <form method="POST" action="{{ route('cashier.orders.sms', $order) }}" class="mt-4 space-y-3">
+                <form method="POST" action="{{ route($routePrefix . 'orders.sms', $order) }}" class="mt-4 space-y-3">
                     @csrf
                     <select name="template_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm">
                         <option value="">Выберите шаблон</option>

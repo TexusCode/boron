@@ -4,6 +4,10 @@ use App\Http\Controllers\Manager\DashboardController;
 use App\Http\Controllers\Manager\OrderController;
 use App\Http\Controllers\Manager\PagesController;
 use App\Http\Controllers\Manager\ProductController;
+use App\Http\Controllers\Cashier\ClientController as CashierClientController;
+use App\Http\Controllers\Cashier\DashboardController as CashierDashboardController;
+use App\Http\Controllers\Cashier\OrderController as CashierOrderController;
+use App\Http\Controllers\Cashier\SmsTemplateController as CashierSmsTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
@@ -29,4 +33,22 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
     Route::post('/sms-many', [PagesController::class, 'smsmany'])->name('manager.sms-many');
     Route::post('/sms-clients', [PagesController::class, 'storeSmsClient'])->name('manager.sms-clients.store');
     Route::patch('/sms-clients/{user}/toggle', [PagesController::class, 'toggleSmsClient'])->name('manager.sms-clients.toggle');
+
+    Route::prefix('cashier')->name('manager.cashier.')->group(function () {
+        Route::get('/dashboard', [CashierDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/orders', [CashierOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/create', [CashierOrderController::class, 'create'])->name('orders.create');
+        Route::post('/orders', [CashierOrderController::class, 'store'])->name('orders.store');
+        Route::get('/orders/{order}', [CashierOrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/status', [CashierOrderController::class, 'updateStatus'])->name('orders.status');
+        Route::post('/orders/{order}/sms', [CashierOrderController::class, 'sendSms'])->name('orders.sms');
+
+        Route::get('/clients', [CashierClientController::class, 'index'])->name('clients.index');
+        Route::post('/clients', [CashierClientController::class, 'store'])->name('clients.store');
+
+        Route::get('/sms-templates', [CashierSmsTemplateController::class, 'index'])->name('sms-templates.index');
+        Route::post('/sms-templates', [CashierSmsTemplateController::class, 'store'])->name('sms-templates.store');
+        Route::patch('/sms-templates/{template}', [CashierSmsTemplateController::class, 'update'])->name('sms-templates.update');
+        Route::delete('/sms-templates/{template}', [CashierSmsTemplateController::class, 'destroy'])->name('sms-templates.destroy');
+    });
 });

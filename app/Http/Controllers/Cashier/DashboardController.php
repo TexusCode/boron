@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Cashier;
 
-use App\Http\Controllers\Controller;
-
-class DashboardController extends Controller
+class DashboardController extends CashierBaseController
 {
     public function index()
     {
-        return redirect()->route('cashier.orders.create');
+        return redirect()->route($this->routePrefix() . 'orders.create');
     }
 }

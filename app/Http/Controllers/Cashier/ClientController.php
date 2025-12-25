@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Cashier;
-
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class ClientController extends Controller
+class ClientController extends CashierBaseController
 {
     public function index()
     {
-        return view('cashier.pages.clients.index');
+        return view('cashier.pages.clients.index', $this->viewOptions());
     }
 
     public function store(Request $request)

@@ -1,4 +1,6 @@
-@extends('cashier.layouts.app')
+@extends($layout ?? 'cashier.layouts.app')
+
+@php($routePrefix = $routePrefix ?? 'cashier.')
 
 @section('content')
     <section class="space-y-2">
@@ -10,7 +12,7 @@
         @endif
 
 
-        <form method="POST" action="{{ route('cashier.orders.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route($routePrefix . 'orders.store') }}" class="space-y-6">
             @csrf
             <div class="rounded-3xl bg-white p-6 shadow-sm">
                 <div class="flex flex-wrap items-center justify-between gap-3">

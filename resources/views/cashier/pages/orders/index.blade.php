@@ -1,4 +1,6 @@
-@extends('cashier.layouts.app')
+@extends($layout ?? 'cashier.layouts.app')
+
+@php($routePrefix = $routePrefix ?? 'cashier.')
 
 @section('content')
     <section class="space-y-6">
@@ -9,7 +11,7 @@
                     <h1 class="mt-2 text-2xl font-semibold text-slate-900">Заказы кассы</h1>
                     <p class="mt-2 text-sm text-slate-500">Просмотр и управление заказами.</p>
                 </div>
-                <a href="{{ route('cashier.orders.create') }}"
+                <a href="{{ route($routePrefix . 'orders.create') }}"
                     class="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold uppercase text-white">Новый заказ</a>
             </div>
         </header>
@@ -43,7 +45,7 @@
                             <td class="px-6 py-4 text-slate-500">{{ optional($order->created_at)->format('d.m.Y H:i') }}
                             </td>
                             <td class="px-6 py-4">
-                                <a href="{{ route('cashier.orders.show', $order) }}"
+                                <a href="{{ route($routePrefix . 'orders.show', $order) }}"
                                     class="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">Открыть</a>
                             </td>
                         </tr>

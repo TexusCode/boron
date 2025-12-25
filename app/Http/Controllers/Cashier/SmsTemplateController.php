@@ -1,18 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Cashier;
-
-use App\Http\Controllers\Controller;
 use App\Models\SmsTemplate;
 use Illuminate\Http\Request;
 
-class SmsTemplateController extends Controller
+class SmsTemplateController extends CashierBaseController
 {
     public function index()
     {
         $templates = SmsTemplate::orderBy('title')->get();
 
-        return view('cashier.pages.sms-templates.index', compact('templates'));
+        return view('cashier.pages.sms-templates.index', array_merge(compact('templates'), $this->viewOptions()));
     }
 
     public function store(Request $request)

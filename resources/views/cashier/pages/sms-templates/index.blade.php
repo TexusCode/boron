@@ -1,4 +1,6 @@
-@extends('cashier.layouts.app')
+@extends($layout ?? 'cashier.layouts.app')
+
+@php($routePrefix = $routePrefix ?? 'cashier.')
 
 @section('content')
 <section class="space-y-6">
@@ -17,7 +19,7 @@
     <div class="grid gap-6 lg:grid-cols-2">
         <div class="rounded-3xl bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">Новый шаблон</h2>
-            <form method="POST" action="{{ route('cashier.sms-templates.store') }}" class="mt-4 space-y-3">
+            <form method="POST" action="{{ route($routePrefix . 'sms-templates.store') }}" class="mt-4 space-y-3">
                 @csrf
                 <input name="title" placeholder="Название"
                     class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm" required>
@@ -31,7 +33,7 @@
         <div class="space-y-4">
             @foreach ($templates as $template)
                 <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                    <form method="POST" action="{{ route('cashier.sms-templates.update', $template) }}" class="space-y-3">
+                    <form method="POST" action="{{ route($routePrefix . 'sms-templates.update', $template) }}" class="space-y-3">
                         @csrf
                         @method('PATCH')
                         <input name="title" value="{{ $template->title }}"
@@ -40,7 +42,7 @@
                             class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm" required>{{ $template->body }}</textarea>
                         <button type="submit" class="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold uppercase text-white">Обновить</button>
                     </form>
-                    <form method="POST" action="{{ route('cashier.sms-templates.destroy', $template) }}" class="mt-2">
+                    <form method="POST" action="{{ route($routePrefix . 'sms-templates.destroy', $template) }}" class="mt-2">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="rounded-full border border-rose-200 px-4 py-2 text-xs font-semibold uppercase text-rose-600">Удалить</button>

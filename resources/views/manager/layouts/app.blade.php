@@ -80,7 +80,7 @@
 
         <div class="flex">
             <aside id="manager-drawer"
-                class="fixed top-0 left-0 z-50 lg:z-30 h-screen w-72 -translate-x-full transform bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 pt-16 text-white shadow-2xl transition-transform md:translate-x-0"
+                class="fixed top-0 min-h-screen left-0 z-50 lg:z-30 h-screen w-72 -translate-x-full transform bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 pt-16 text-white shadow-2xl transition-transform md:translate-x-0"
                 aria-label="Менеджер меню">
                 <div class="flex h-full flex-col overflow-y-auto px-5 pb-8">
                     <div class="mt-5 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm shadow-inner">
@@ -96,8 +96,10 @@
                         <li>
                             <a href="{{ route('manager.dashboard') }}" @class([
                                 'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
-                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('manager.dashboard'),
-                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('manager.dashboard'),
+                                'bg-white text-slate-900 shadow-lg' => request()->routeIs(
+                                    'manager.dashboard'),
+                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs(
+                                    'manager.dashboard'),
                             ])>
                                 <span @class([
                                     'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
@@ -135,44 +137,64 @@
                                     'flex rounded-xl px-3 py-2 transition',
                                     'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders'),
                                     'hover:bg-white/10' => !request()->routeIs('manager.orders'),
-                                ])>Все заказы</a></li>
+                                ])>Все заказы</a>
+                                </li>
                                 <li><a href="{{ route('manager.orders-peending') }}" @class([
                                     'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders-peending'),
+                                    'bg-white text-slate-900 shadow' => request()->routeIs(
+                                        'manager.orders-peending'),
                                     'hover:bg-white/10' => !request()->routeIs('manager.orders-peending'),
-                                ])>В ожидании</a></li>
-                                <li><a href="{{ route('manager.orders-confirmed') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders-confirmed'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.orders-confirmed'),
-                                ])>Подтверждено</a></li>
-                                <li><a href="{{ route('manager.orders-sended') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders-sended'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.orders-sended'),
-                                ])>Отправлено</a></li>
-                                <li><a href="{{ route('manager.orders-delivered') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders-delivered'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.orders-delivered'),
-                                ])>Доставлено</a></li>
-                                <li><a href="{{ route('manager.orders-cancelled') }}" @class([
-                                    'flex rounded-xl px-3 py-2 transition',
-                                    'bg-white text-slate-900 shadow' => request()->routeIs('manager.orders-cancelled'),
-                                    'hover:bg-white/10' => !request()->routeIs('manager.orders-cancelled'),
-                                ])>Отменено</a></li>
+                                ])>В
+                                        ожидании</a></li>
+                                <li><a href="{{ route('manager.orders-confirmed') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.orders-confirmed'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.orders-confirmed'),
+                                        ])>Подтверждено</a></li>
+                                <li><a href="{{ route('manager.orders-sended') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.orders-sended'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.orders-sended'),
+                                        ])>Отправлено</a></li>
+                                <li><a href="{{ route('manager.orders-delivered') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.orders-delivered'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.orders-delivered'),
+                                        ])>Доставлено</a></li>
+                                <li><a href="{{ route('manager.orders-cancelled') }}"
+                                        @class([
+                                            'flex rounded-xl px-3 py-2 transition',
+                                            'bg-white text-slate-900 shadow' => request()->routeIs(
+                                                'manager.orders-cancelled'),
+                                            'hover:bg-white/10' => !request()->routeIs('manager.orders-cancelled'),
+                                        ])>Отменено</a></li>
                             </ul>
                         </li>
 
                         <li>
                             <a href="{{ route('manager.products') }}" @class([
                                 'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
-                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('manager.products') || request()->routeIs('manager.peending-products') || request()->routeIs('manager.products-not-stock'),
-                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('manager.products') && !request()->routeIs('manager.peending-products') && !request()->routeIs('manager.products-not-stock'),
+                                'bg-white text-slate-900 shadow-lg' =>
+                                    request()->routeIs('manager.products') ||
+                                    request()->routeIs('manager.peending-products') ||
+                                    request()->routeIs('manager.products-not-stock'),
+                                'text-slate-200 hover:bg-white/10 hover:text-white' =>
+                                    !request()->routeIs('manager.products') &&
+                                    !request()->routeIs('manager.peending-products') &&
+                                    !request()->routeIs('manager.products-not-stock'),
                             ])>
                                 <span @class([
                                     'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
-                                    'bg-slate-900/5 text-slate-900' => request()->routeIs('manager.products') || request()->routeIs('manager.peending-products') || request()->routeIs('manager.products-not-stock'),
+                                    'bg-slate-900/5 text-slate-900' =>
+                                        request()->routeIs('manager.products') ||
+                                        request()->routeIs('manager.peending-products') ||
+                                        request()->routeIs('manager.products-not-stock'),
                                 ])>
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"
                                         viewBox="0 0 24 24">
@@ -187,8 +209,10 @@
                         <li>
                             <a href="{{ route('manager.sms-page') }}" @class([
                                 'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
-                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('manager.sms-page'),
-                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('manager.sms-page'),
+                                'bg-white text-slate-900 shadow-lg' => request()->routeIs(
+                                    'manager.sms-page'),
+                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs(
+                                    'manager.sms-page'),
                             ])>
                                 <span @class([
                                     'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
@@ -201,6 +225,26 @@
                                     </svg>
                                 </span>
                                 <span>SMS панель</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('manager.cashier.orders.create') }}" @class([
+                                'flex items-center gap-3 rounded-2xl px-4 py-3 transition',
+                                'bg-white text-slate-900 shadow-lg' => request()->routeIs('manager.cashier.*'),
+                                'text-slate-200 hover:bg-white/10 hover:text-white' => !request()->routeIs('manager.cashier.*'),
+                            ])>
+                                <span @class([
+                                    'flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white',
+                                    'bg-slate-900/5 text-slate-900' => request()->routeIs('manager.cashier.*'),
+                                ])>
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 7.5h18M3 12h18M3 16.5h18M7.5 7.5v9m9-9v9" />
+                                    </svg>
+                                </span>
+                                <span>Касса</span>
                             </a>
                         </li>
                     </ul>

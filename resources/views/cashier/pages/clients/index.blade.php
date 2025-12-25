@@ -1,4 +1,6 @@
-@extends('cashier.layouts.app')
+@extends($layout ?? 'cashier.layouts.app')
+
+@php($routePrefix = $routePrefix ?? 'cashier.')
 
 @section('content')
 <section class="space-y-6">
@@ -14,7 +16,7 @@
         <p class="mt-2 text-sm text-slate-500">Если номер уже есть, имя обновится.</p>
     </header>
 
-    <form method="POST" action="{{ route('cashier.clients.store') }}" class="rounded-3xl bg-white p-6 shadow-sm">
+    <form method="POST" action="{{ route($routePrefix . 'clients.store') }}" class="rounded-3xl bg-white p-6 shadow-sm">
         @csrf
         <div class="grid gap-4 sm:grid-cols-2">
             <div>

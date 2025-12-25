@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Cashier;
-
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\SmsController;
 use App\Models\Order;
 use App\Models\Product;
@@ -14,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
-class OrderController extends Controller
+class OrderController extends CashierBaseController
 {
     public function index()
     {
@@ -23,7 +21,7 @@ class OrderController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        return view('cashier.pages.orders.index', compact('orders'));
+        return view('cashier.pages.orders.index', array_merge(compact('orders'), $this->viewOptions()));
     }
 
     public function create()
@@ -31,7 +29,7 @@ class OrderController extends Controller
         $products = Product::orderBy('name')->get();
         $couriers = User::whereIn('role', ['deliver', 'courier'])->orderBy('name')->get();
 
-        return view('cashier.pages.orders.create', compact('products', 'couriers'));
+        return view('cashier.pages.orders.create', array_merge(compact('products', 'couriers'), $this->viewOptions()));
     }
 
     public function store(Request $request)
@@ -124,7 +122,7 @@ class OrderController extends Controller
             $sms->sendSms($user->phone, $this->buildClientMessage($order));
         }
 
-        return redirect()->route('cashier.orders.show', $order)->with('success', 'Заказ создан.');
+        return redirect()->route($this->routePrefix() . 'orders.show', $order)->with('success', 'Заказ создан.');
     }
 
     public function show(Order $order)
@@ -132,7 +130,7 @@ class OrderController extends Controller
         $order->load(['user', 'suborders.product']);
         $templates = SmsTemplate::orderBy('title')->get();
 
-        return view('cashier.pages.orders.show', compact('order', 'templates'));
+        return view('cashier.pages.orders.show', array_merge(compact('order', 'templates'), $this->viewOptions()));
     }
 
     public function updateStatus(Request $request, Order $order)
