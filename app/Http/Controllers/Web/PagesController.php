@@ -53,6 +53,7 @@ class PagesController extends Controller
             })
             ->where('status', true)
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(36)
             ->withQueryString();
         if ($request->ajax()) {
@@ -354,7 +355,8 @@ class PagesController extends Controller
         // Сортировка
         $sortDirection = $request->sort === 'asc' ? 'asc' : 'desc';
         $query->orderByRaw('stock > 0 DESC')
-            ->orderBy('created_at', $sortDirection);
+            ->orderBy('created_at', $sortDirection)
+            ->orderBy('id', $sortDirection);
 
         // Пагинация
         $products = $query->paginate(36)->withQueryString();
