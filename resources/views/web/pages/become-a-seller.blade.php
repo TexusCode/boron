@@ -1,80 +1,99 @@
 @extends('web.layouts.app')
 @section('content')
-<form action="{{ route('seller-register') }}" method="POST" enctype="multipart/form-data" class="p-2 mx-auto mt-6 mb-24 rounded lg:p-0 lg:grid lg:grid-cols-2 lg:gap-4 max-w-7xl">
-    @csrf
-    <div class="col-span-full">
-        <h1 class="mb-4 text-3xl font-bold text-gray-800">Регистрация продавца</h1>
+<section class="bg-slate-50">
+    <div class="max-w-6xl px-4 py-10 mx-auto">
+        <div class="grid items-start gap-8 lg:grid-cols-2">
+            <div class="space-y-6">
+                <span class="inline-flex items-center rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">Старт продаж</span>
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 sm:text-4xl">Регистрация продавца</h1>
+                    <p class="mt-3 text-base text-slate-600">
+                        Добро пожаловать! Мы рады, что вы решили присоединиться к нашему сообществу продавцов.
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-sm text-slate-600">
+                        Заполните форму справа, чтобы завершить регистрацию. Укажите данные магазина, добавьте документы и примите условия.
+                    </p>
+                    <ul class="mt-4 space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                            <span>Доступ к кабинету продавца сразу после проверки.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                            <span>Управление товарами, заказами и аналитикой.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                            <span>Поддержка и помощь в настройке.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+                    Нужные документы: логотип, патент, паспорт (лицевая и обратная сторона).
+                </div>
+            </div>
 
-        <!-- Подзаголовок с приветствием -->
-        <p class="mb-4 text-lg text-gray-600">
-            Добро пожаловать! Мы рады, что вы решили присоединиться к нашему сообществу продавцов.
-        </p>
+            <form action="{{ route('seller-register') }}" method="POST" enctype="multipart/form-data" class="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
+                @csrf
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-900">Данные магазина</h2>
+                    <p class="mt-1 text-sm text-slate-500">Укажите название и контактный телефон.</p>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="store_name" class="block text-sm font-semibold text-slate-700">Название магазина</label>
+                            <input type="text" name="store_name" id="store_name" required placeholder="Введите название магазина" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        </div>
+                        <div>
+                            <label for="store_phone" class="block text-sm font-semibold text-slate-700">Телефон магазина</label>
+                            <div class="mt-2 flex">
+                                <span class="flex items-center rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 px-3 text-sm font-semibold text-slate-700">+992</span>
+                                <input type="text" name="store_phone" id="store_phone" class="block w-full rounded-r-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200" placeholder="931234567" minlength="9" maxlength="9" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="description" class="block text-sm font-semibold text-slate-700">Описание</label>
+                            <textarea name="description" id="description" rows="4" placeholder="Введите краткое описание" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200"></textarea>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Описание шагов регистрации -->
-        <p class="mb-6 text-gray-700">
-            Пожалуйста, заполните форму ниже, чтобы завершить регистрацию. Укажите информацию о вашем магазине, добавьте необходимые документы и примите условия использования. После регистрации вам будет доступен личный кабинет для управления товарами и заказами.
-        </p>
+                <div class="border-t border-slate-100 pt-6">
+                    <h2 class="text-lg font-semibold text-slate-900">Документы</h2>
+                    <p class="mt-1 text-sm text-slate-500">Загрузите нужные файлы одним форматом.</p>
+                    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="logo" class="block text-sm font-semibold text-slate-700">Логотип магазина</label>
+                            <input type="file" name="logo" id="logo" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
+                        </div>
+                        <div>
+                            <label for="patent" class="block text-sm font-semibold text-slate-700">Документ патента</label>
+                            <input type="file" name="patent" id="patent" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
+                        </div>
+                        <div>
+                            <label for="passport_front" class="block text-sm font-semibold text-slate-700">Паспорт (лицевая сторона)</label>
+                            <input type="file" name="passport_front" id="passport_front" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
+                        </div>
+                        <div>
+                            <label for="passport_back" class="block text-sm font-semibold text-slate-700">Паспорт (обратная сторона)</label>
+                            <input type="file" name="passport_back" id="passport_back" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
+                        </div>
+                    </div>
+                </div>
 
-    </div>
-    <!-- Название магазина -->
-    <div class="mb-2">
-        <label for="store_name" class="block mb-2 font-bold text-gray-700">Название магазина</label>
-        <input type="text" name="store_name" id="store_name" required placeholder="Введите название магазина" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-    </div>
+                <div class="border-t border-slate-100 pt-6">
+                    <label class="flex items-start gap-3 text-sm text-slate-600" for="terms">
+                        <input type="checkbox" name="terms" required id="terms" class="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300">
+                        <span>Я согласен с условиями использования сервиса.</span>
+                    </label>
+                </div>
 
-    <!-- Телефон магазина -->
-    <div class="mb-2">
-        <label for="store_phone" class="block mb-2 font-bold text-gray-700">Телефон магазина</label>
-        <div class="flex">
-            <span class="block p-2 text-base border border-r-0 border-black rounded-l-lg w-min">+992</span>
-
-            <input type="text" name="store_phone" class="block w-full p-2 text-base border rounded-r-lg focus:outline-none focus:ring focus:ring-blue-200" placeholder="931234567" minlength="9" maxlength="9" required>
-
-
+                <button type="submit" class="w-full rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-widest text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                    Зарегистрироваться
+                </button>
+            </form>
         </div>
-
-        {{-- <input type="text" name="store_phone" id="store_phone" required placeholder="Введите телефон магазина" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200"> --}}
     </div>
-
-    <!-- Описание -->
-    <div class="mb-2 col-span-full">
-        <label for="description" class="block mb-2 font-bold text-gray-700">Описание</label>
-        <textarea name="description" id="description" placeholder="Введите краткое описание" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200"></textarea>
-    </div>
-
-    <!-- Логотип -->
-    <div class="mb-2">
-        <label for="logo" class="block mb-2 font-bold text-gray-700">Логотип магазина</label>
-        <input type="file" name="logo" id="logo" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Патент -->
-    <div class="mb-2">
-        <label for="patent" class="block mb-2 font-bold text-gray-700">Документ патента</label>
-        <input type="file" name="patent" id="patent" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Паспорт (лицевая сторона) -->
-    <div class="mb-2">
-        <label for="passport_front" class="block mb-2 font-bold text-gray-700">Паспорт (лицевая сторона)</label>
-        <input type="file" name="passport_front" id="passport_front" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Паспорт (обратная сторона) -->
-    <div class="mb-2">
-        <label for="passport_back" class="block mb-2 font-bold text-gray-700">Паспорт (обратная сторона)</label>
-        <input type="file" name="passport_back" id="passport_back" class="w-full px-6 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" {{ Auth::check() && Auth::user()->role == 'admin' ? '' : 'required' }}>
-    </div>
-
-    <!-- Чекбокс "Согласие с условиями" -->
-    <div class="flex items-center mb-6 col-span-full">
-        <input type="checkbox" name="terms" required id="terms" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-        <label for="terms" class="block ml-2 text-gray-700">Я согласен с условиями</label>
-    </div>
-
-    <!-- Кнопка отправки -->
-    <div class="flex justify-center lg:justify-start">
-        <button type="submit" class="w-full px-6 py-2 font-semibold text-white bg-blue-600 rounded-lg lg:w-min hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200">Регистрация</button>
-    </div>
-</form>
+</section>
 @endsection
