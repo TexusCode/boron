@@ -117,11 +117,6 @@ class OrderController extends CashierBaseController
             }
         }
 
-        if ($user->phone) {
-            $sms = new SmsController();
-            $sms->sendSms($user->phone, $this->buildClientMessage($order));
-        }
-
         return redirect()->route($this->routePrefix() . 'orders.show', $order)->with('success', 'Заказ создан.');
     }
 

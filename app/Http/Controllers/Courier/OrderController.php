@@ -98,6 +98,31 @@ class OrderController extends Controller
         return back()->with('success', 'Статус заказа обновлён.');
     }
 
+    public function markReceived(Request $request, Order $order)
+    {
+        $courier = $this->resolveCourier();
+        if (!$courier || $order->deliver_boy_id !== $courier->id) {
+            abort(403);
+        }
+
+        if (in_array($order->status, ['Доставлен', 'Отменено'], true)) {
+            return back()->with('error', 'Нельзя обновить статус этого заказа.');
+        }
+
+        if ($order->status !== 'Передан курьеру') {
+            $order->status = 'Передан курьеру';
+            $order->save();
+
+            $phone = $order->user->phone ?? null;
+            if ($phone) {
+                $smsController = new SmsController();
+                $smsController->sendSms($phone, $this->buildReceivedMessage($order));
+            }
+        }
+
+        return back()->with('success', 'Заказ отмечен как переданный курьеру.');
+    }
+
     public function cancel(Request $request, Order $order)
     {
         $courier = $this->resolveCourier();
@@ -144,5 +169,10 @@ class OrderController extends Controller
         );
 
         return "Ваш заказ №{$order->id} успешно доставлен. Оставьте отзыв: {$link}";
+    }
+
+    private function buildReceivedMessage(Order $order): string
+    {
+        return "Ваш заказ №{$order->id} был передан курьеру. Скоро свяжутся с вами, будьте на связи.";
     }
 }

@@ -23,6 +23,27 @@ use Illuminate\Support\Facades\Session;
 
 class PagesController extends Controller
 {
+    private function generateFallbackName(): string
+    {
+        $suffix = strtoupper(bin2hex(random_bytes(3)));
+        return "User#{$suffix}";
+    }
+
+    private function resolveUserName(?string $requestedName, ?string $existingName): string
+    {
+        $requestedName = trim((string) $requestedName);
+        if ($requestedName !== '') {
+            return $requestedName;
+        }
+
+        $existingName = trim((string) $existingName);
+        if ($existingName !== '') {
+            return $existingName;
+        }
+
+        return $this->generateFallbackName();
+    }
+
     public function filters(Request $request)
     {
         $products = Product::select('products.*')
@@ -50,20 +71,44 @@ class PagesController extends Controller
             return redirect()->route('cart')->with('error', 'Не удалось найти данные заказа.');
         }
 
+        $requestedName = $request->input('name');
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'city' => 'required|string',
+            'location' => 'required|string',
+            'payment' => 'required|string',
+            'delivery_type' => 'required|string',
+        ];
+
+        if (!Auth::check()) {
+            $request->validate(['phone' => 'required|string|min:9|max:9']);
+            $rules['phone'] = 'required|string|min:9|max:9';
+        }
+
         // Определяем пользователя, если он аутентифицирован
         if (Auth::check()) {
             $user = Auth::user();
-            $user->name = $request->name;
-            $user->save();
+            $resolvedName = $this->resolveUserName($requestedName, $user->name);
+            $request->merge(['name' => $resolvedName]);
+            $request->validate($rules);
+
+            if ($user->name !== $resolvedName) {
+                $user->name = $resolvedName;
+                $user->save();
+            }
 
             $phone = $user->phone;
             $orderStatus = 'Ожидание';
         } else {
             $phone = $request->phone;
             $user = User::firstOrCreate(['phone' => $phone]);
+            $resolvedName = $this->resolveUserName($requestedName, $user->name);
+            $request->merge(['name' => $resolvedName]);
+            $request->validate($rules);
 
-            if (!$user->wasRecentlyCreated && $user->name !== $request->name) {
-                $user->name = $request->name;
+            if ($user->name !== $resolvedName) {
+                $user->name = $resolvedName;
                 $user->save();
             }
 

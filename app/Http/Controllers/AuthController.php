@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+    private function generateFallbackName(): string
+    {
+        $suffix = strtoupper(bin2hex(random_bytes(3)));
+        return "User#{$suffix}";
+    }
+
     public function login()
     {
         $verificationCode = rand(100000, 999999);
@@ -55,6 +61,11 @@ class AuthController extends Controller
 
             $user = User::where('phone', $phone)->first();
             if ($user) {
+                if (trim((string) $user->name) === '') {
+                    $user->name = $this->generateFallbackName();
+                    $user->save();
+                }
+
                 $remember = true;
                 Auth::login($user, $remember);
 
@@ -77,6 +88,7 @@ class AuthController extends Controller
             $user = new User();
             $user->phone = $phone;
             $user->role = 'customer';
+            $user->name = $this->generateFallbackName();
             $user->save();
 
             $remember = $request->has('remember');

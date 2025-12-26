@@ -87,6 +87,15 @@
                     <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
                         <p class="text-xs text-slate-400">Создан: {{ optional($order->created_at)->format('d.m.Y H:i') }}</p>
                         <div class="flex flex-wrap items-center gap-2">
+                            @if (!in_array($order->status, ['Передан курьеру', 'Отправлен', 'Доставлен', 'Отменено'], true))
+                                <form method="POST" action="{{ route('courier.orders.received', $order) }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow">
+                                        Получил заказ
+                                    </button>
+                                </form>
+                            @endif
                             @if (!in_array($order->status, ['Доставлен', 'Отменено'], true))
                                 <form method="POST" action="{{ route('courier.orders.delivered', $order) }}">
                                     @csrf

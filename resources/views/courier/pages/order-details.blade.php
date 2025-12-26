@@ -84,6 +84,15 @@
     <div class="rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-white/60">
         <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Действия</p>
         <div class="mt-3 flex flex-wrap items-center gap-3">
+            @if (!in_array($order->status, ['Передан курьеру', 'Отправлен', 'Доставлен', 'Отменено'], true))
+                <form method="POST" action="{{ route('courier.orders.received', $order) }}">
+                    @csrf
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-xs font-semibold uppercase tracking-widest text-white shadow-lg">
+                        Получил заказ
+                    </button>
+                </form>
+            @endif
             <form method="POST" action="{{ route('courier.orders.delivered', $order) }}">
                 @csrf
                 <button type="submit"
@@ -101,7 +110,7 @@
                     Отменить
                 </button>
             @endif
-            <span class="text-xs text-slate-400">После нажатия клиенту отправится SMS.</span>
+            <span class="text-xs text-slate-400">После подтверждения клиенту отправится SMS.</span>
         </div>
 
         <div id="order-cancel" class="mt-4 hidden rounded-2xl border border-rose-100 bg-rose-50/70 p-4">
