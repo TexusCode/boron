@@ -65,7 +65,7 @@ class PagesController extends Controller
     {
         $clientCode = Cookie::get('client_code');
         $ordercheckout = OderCheckout::where('cookie', $clientCode)->first();
-        $maxOrderNumber = Order::max('no') ?? 0; // Если нет заказов, начнем с 0
+        $maxOrderNumber = (int) (Order::max('no') ?? 0); // Если нет заказов, начнем с 0
 
         if (!$ordercheckout) {
             return redirect()->route('cart')->with('error', 'Не удалось найти данные заказа.');
